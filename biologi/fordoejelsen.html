@@ -124,6 +124,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outlin
 .q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
 .note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Orddeling: browserens danske ordbog (stavelser), min. 10 tegn og 4 tegn på hver side. Bløde bindestreger i lange titelord dækker browsere uden dansk ordbog. */
+h1, h2, h3, p, li, .card, a { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; overflow-wrap: break-word; }
 </style>
 </head>
 <body>
@@ -264,6 +267,21 @@ if (D.facts && D.facts.length) {
     return `<div class="fact"><div class="v">${f.v}</div><p>${f.d}</p>${vis}<div class="src">${f.src}</div></div>`;
   }).join('');
 } else $('facts-sec').hidden = true;
+
+// Pæn orddeling: bløde bindestreger ved sammensætninger (/) eller ellers ved stavelser (|), mindst 4 tegn på hver side
+(() => {
+  const W = 'Celle/membranen Citronsyre/cyklussen Citronsyre/cyklus DNA-kopiering Elek|tro|fo|re|se Elektron/transport/kæden Energi/strømmen Fosfor/kredsløbet Gen/splejsning Kromosom/mutationer Kvælstoffets Kvælstof/nedfald Livs/cyklusser Lys/processerne Menstruations/cyklussen Menstruations/cyklus Nerve/impulsen Nerve/impulser Nerve/systemets Nerve/systemet Nerve/celler Primær/produktion Stamtavle-gåder Mi|to|kon|dri|et Mi|to|kon|dri|er|ne Hor|mo|ner|nes Hy|po|tha|la|mus Hy|po|fy|sen Me|ta|bo|lis|me Fo|to|syn|te|sen Fo|to|syn|te|se Re|spi|ra|tio|nen Re|spi|ra|tion Kvælstof/kredsløbet Kulstof/kredsløbet Kulstoffets Kul|hy|dra|ter Kul|hy|dra|ter|ne Blod/sukkeret Blod/sukker Amino/syrer Amino/syrerne Gly|ko|ly|se Gly|ko|ly|sen Kro|mo|so|mer Kro|mo|so|mer|ne Celle/deling Celle/væggen Celle/væg Bak|te|ri|er|ne Bak|te|ri|ens Ek|so|cy|to|se En|do|cy|to|se Transport/protein Transport/proteiner Sæd/celler Æg/celler Pro|te|i|ner|nes Pro|te|i|net Pro|te|i|ner Kæde/reaktion Stof/skifte Elektro/forese Gen/teknologi Fordøjelses/systemet Fordøjelsen Livs/cyklus Slægts/træ Kromosom/mutation Tarm/bakterier Mælke/sukker Mave/sækken Lever/celler Muskel/celler Muskel/fibre Hormon/kortet Post/væsenet Post/væsen Arve/anlæg'.split(' ');
+  const M = new Map();
+  for (const w of W) {
+    const sep = w.includes('/') ? '/' : '|'; const p = w.replace(/[|/]/g, ''); let out = '', pos = 0;
+    for (const part of w.replace(sep == '/' ? /\|/g : /\//g, '').split(sep)) { if (out && pos >= 4 && p.length - pos >= 4) out += '\u00AD'; out += part; pos += part.length; }
+    M.set(p, out); M.set(p.toLowerCase(), out.toLowerCase());
+  }
+  const re = /[A-Za-zÆØÅæøå-]{9,}/g;
+  window.hy = root => { const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('svg,script,style') ? 2 : 1 }); let n; while ((n = tw.nextNode())) { const t = n.nodeValue.replace(re, w => M.get(w) || w); if (t !== n.nodeValue) n.nodeValue = t; } };
+})();
+
+hy(document.body);
 </script>
 </body>
 </html>

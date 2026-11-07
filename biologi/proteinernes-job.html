@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proteinernes job</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: kort over de fire bidder øverst, derefter én stor tegning, der bygges op trin for trin, og en fortæller-boks under den. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --accent: #3d7f2e; --accent-soft: #e3f0dc;
+  --leaf: #4f9a3a; --leaf-soft: #cfe6c4; --sun: #e0a100; --sun-soft: #fbedc4;
+  --water: #2f7fc1; --water-soft: #d6e8f6; --hplus: #d0582a; --electron: #7b4bc4;
+  --carbon: #26302b; --air: #c2412f; --membrane: #b9d3a8; --stroma: #eef6e7; --lumen: #fbeee4;
+  --node: #ffffff; --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --accent: #8fd67a; --accent-soft: #1e2f1a;
+    --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+    --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+    --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --accent: #8fd67a; --accent-soft: #1e2f1a;
+  --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+  --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+  --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; } h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+
+/* Kort over bidderne */
+.map { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.map a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); text-decoration: none; font-size: .9rem; min-width: 0; }
+.map a b { font-family: var(--font-display); color: var(--fg); font-size: 1rem; }
+.map a.here { border-color: var(--accent); background: var(--accent-soft); }
+.map a.here b { color: var(--accent); }
+.map a:hover { border-color: var(--accent); }
+@media (max-width: 620px) { .map { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.fact { border-left: 4px solid var(--accent); padding-left: 14px; display: grid; gap: 6px; }
+.fact .v { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--accent); }
+.fact .src { font-size: .8rem; color: var(--muted); }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 8em 1fr; gap: 10px; align-items: center; font-size: .9rem; }
+.bar .track { height: 14px; border-radius: 7px; background: var(--accent-soft); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; background: var(--accent); }
+
+/* Tegning */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: var(--font-body); fill: var(--fg); font-size: 14px; }
+svg .t { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 700; }
+[data-s] { transition: opacity .3s; }
+.dim [data-s]:not(.on) { opacity: .22; }
+.on .glow, .on.glow { filter: drop-shadow(0 0 6px var(--sun)); }
+.flow { stroke-dasharray: 8 7; }
+.on .flow, .on.flow { animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -30; } }
+.spin { transform-box: fill-box; transform-origin: center; }
+.on .spin { animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hint { font-size: .88rem; color: var(--muted); padding: 10px 18px 0; }
+.story { display: grid; gap: 12px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); margin-top: 12px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story p { max-width: 70ch; }
+.story .img { font-style: italic; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 1.5px solid var(--accent); background: var(--surface); }
+.dots button.on { background: var(--accent); }
+
+.section { display: grid; gap: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; color: var(--accent); }
+.steps .img { font-size: .92rem; color: var(--muted); font-style: italic; }
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 24px; }
+.words div { display: grid; gap: 2px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.words b { font-family: var(--font-display); }
+.words span { color: var(--muted); font-size: .95rem; }
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.q button.wrong { background: var(--hplus); border-color: var(--hplus); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Orddeling: browserens danske ordbog (stavelser), min. 10 tegn og 4 tegn på hver side. Bløde bindestreger i lange titelord dækker browsere uden dansk ordbog. */
+h1, h2, h3, p, li, .card, a { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <nav class="map" id="map" aria-label="Emner i serien"></nav>
+
+  <section class="card" aria-label="Tegning">
+    <p class="hint">Tryk Næste for at bygge tegningen op, eller tryk direkte på noget i tegningen.</p>
+    <div class="scroll"><svg viewBox="0 0 820 560" role="img" aria-label="Proteiners job i kroppen som ikoner, og kroppens proteinkredsløb fra mad til nyt protein"><defs>
+<marker id="m-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+<marker id="m-sun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--sun)"/></marker>
+<marker id="m-water" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--water)"/></marker>
+<marker id="m-leaf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--leaf)"/></marker>
+<marker id="m-air" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--air)"/></marker>
+<marker id="m-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--electron)"/></marker>
+<marker id="m-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--hplus)"/></marker>
+<marker id="m-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+<marker id="m-fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fg)"/></marker>
+</defs>
+<g data-s="0"><rect x="15" y="30" width="120" height="150" rx="14" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/><g transform="translate(75,85)"><path d="M-24,0 L24,0 M-24,-10 L10,-10 M-10,10 L24,10" style="stroke:var(--hplus);stroke-width:6"/></g><text x="75" y="145" text-anchor="middle" class="b">Muskler</text><text x="75" y="164" text-anchor="middle" class="small">aktin og myosin</text></g>
+<g data-s="0"><rect x="149" y="30" width="120" height="150" rx="14" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/><g transform="translate(209,85)"><path d="M-18,20 Q-20,-20 0,-24 Q20,-20 18,20" style="fill:none;stroke:var(--sun);stroke-width:5"/><path d="M-8,-20 L-8,20 M0,-22 L0,20 M8,-20 L8,20" style="stroke:var(--sun);stroke-width:2"/></g><text x="209" y="145" text-anchor="middle" class="b">Hud og hår</text><text x="209" y="164" text-anchor="middle" class="small">keratin og kollagen</text></g>
+<g data-s="1"><rect x="283" y="30" width="120" height="150" rx="14" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/><g transform="translate(343,85)"><path d="M-20,-14 L16,8 M-20,14 L16,-8" style="stroke:var(--fg);stroke-width:4"/><circle cx="-22" cy="-16" r="6" style="fill:none;stroke:var(--fg);stroke-width:3"/><circle cx="-22" cy="16" r="6" style="fill:none;stroke:var(--fg);stroke-width:3"/></g><text x="343" y="145" text-anchor="middle" class="b">Enzymer</text><text x="343" y="164" text-anchor="middle" class="small">klipper og bygger</text></g>
+<g data-s="1"><rect x="417" y="30" width="120" height="150" rx="14" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/><g transform="translate(477,85)"><rect x="-12" y="-24" width="24" height="48" rx="8" style="fill:var(--sun-soft);stroke:var(--sun);stroke-width:3"/><path d="M0,16 L0,-14" style="stroke:var(--sun);stroke-width:3" marker-end="url(#m-sun)"/></g><text x="477" y="145" text-anchor="middle" class="b">Pumper</text><text x="477" y="164" text-anchor="middle" class="small">i membranen</text></g>
+<g data-s="2"><rect x="551" y="30" width="120" height="150" rx="14" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/><g transform="translate(611,85)"><rect x="-22" y="-14" width="44" height="28" rx="3" style="fill:var(--surface);stroke:var(--water);stroke-width:3"/><path d="M-22,-14 L0,4 L22,-14" style="fill:none;stroke:var(--water);stroke-width:3"/></g><text x="611" y="145" text-anchor="middle" class="b">Hormoner</text><text x="611" y="164" text-anchor="middle" class="small">beskeder i blodet</text></g>
+<g data-s="2"><rect x="685" y="30" width="120" height="150" rx="14" style="fill:var(--surface);stroke:var(--line);stroke-width:1.5"/><g transform="translate(745,85)"><path d="M0,24 L0,0 L-16,-20 M0,0 L16,-20" style="fill:none;stroke:var(--electron);stroke-width:6;stroke-linecap:round"/></g><text x="745" y="145" text-anchor="middle" class="b">Forsvar</text><text x="745" y="164" text-anchor="middle" class="small">antistoffer</text></g>
+<g data-s="3,4,5,6"><text x="410" y="230" text-anchor="middle" class="t">Kroppens proteinkredsløb</text></g>
+<g data-s="3"><text x="100" y="285" text-anchor="middle" class="small b">mad: fx kød</text><path d="M40.0,310.0 L60.0,310.0 L80.0,310.0 L100.0,310.0 L120.0,310.0 L140.0,310.0 L160.0,310.0" style="fill:none;stroke:var(--muted);stroke-width:2"/><circle cx="40.0" cy="310.0" r="8" style="fill:var(--leaf)"/><circle cx="60.0" cy="310.0" r="8" style="fill:var(--sun)"/><circle cx="80.0" cy="310.0" r="8" style="fill:var(--hplus)"/><circle cx="100.0" cy="310.0" r="8" style="fill:var(--leaf)"/><circle cx="120.0" cy="310.0" r="8" style="fill:var(--electron)"/><circle cx="140.0" cy="310.0" r="8" style="fill:var(--hplus)"/><circle cx="160.0" cy="310.0" r="8" style="fill:var(--water)"/></g>
+<g data-s="4"><path d="M190,310 L260,310" style="fill:none;stroke:var(--muted);stroke-width:3" marker-end="url(#m-dark)"/><text x="225" y="295" text-anchor="middle" class="small b">enzymer klipper</text><circle cx="290" cy="304" r="8" style="fill:var(--leaf)"/><circle cx="314" cy="316" r="8" style="fill:var(--sun)"/><circle cx="338" cy="304" r="8" style="fill:var(--hplus)"/><circle cx="362" cy="316" r="8" style="fill:var(--leaf)"/><circle cx="386" cy="304" r="8" style="fill:var(--electron)"/><circle cx="410" cy="316" r="8" style="fill:var(--hplus)"/><circle cx="434" cy="304" r="8" style="fill:var(--water)"/><text x="360" y="345" text-anchor="middle" class="small b">frie aminosyrer</text></g>
+<g data-s="5"><path d="M460,310 L520,310" style="fill:none;stroke:var(--hplus);stroke-width:3" class="flow" marker-end="url(#m-h)"/><text x="490" y="345" text-anchor="middle" class="small b" style="fill:var(--hplus)">via blodet</text></g>
+<g data-s="6"><circle cx="640" cy="310" r="80" style="fill:var(--surface);stroke:var(--fg);stroke-width:2"/><circle cx="640" cy="275" r="20" style="fill:var(--water-soft);stroke:var(--water);stroke-width:2"/><path d="M585.0,330.0 L607.0,330.0 L629.0,330.0 L651.0,330.0 L673.0,330.0 L695.0,330.0" style="fill:none;stroke:var(--muted);stroke-width:2"/><circle cx="585.0" cy="330.0" r="7" style="fill:var(--leaf)"/><circle cx="607.0" cy="330.0" r="7" style="fill:var(--sun)"/><circle cx="629.0" cy="330.0" r="7" style="fill:var(--hplus)"/><circle cx="651.0" cy="330.0" r="7" style="fill:var(--leaf)"/><circle cx="673.0" cy="330.0" r="7" style="fill:var(--electron)"/><circle cx="695.0" cy="330.0" r="7" style="fill:var(--hplus)"/><text x="640" y="420" text-anchor="middle" class="small b">cellen bygger nyt protein</text></g>
+<g data-s="7"><text x="410" y="470" text-anchor="middle" class="b" style="fill:var(--accent)">Samme 20 klodser, uendelig mange bygninger</text><text x="410" y="495" text-anchor="middle" class="small">Det er rækkefølgen, der bestemmer, hvad proteinet bliver til.</text></g>
+</svg></div>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div><div class="count" id="count"></div><h3 id="st-title"></h3></div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="img" id="st-img"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Alle trin på én gang</h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section" id="facts-sec">
+    <h2>Set i bogen</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="section">
+    <h2>Ord, du møder</h2>
+    <div class="words" id="words"></div>
+  </section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+<script>
+const D = {"title": "Proteinernes job", "lede": "Proteiner er kroppens arbejdere. De bygger, klipper, pumper, sender beskeder og forsvarer. Alle er bygget af de samme 20 slags klodser: aminosyrer.", "story": [{"title": "Byggematerialer", "text": "Aktin og myosin får musklerne til at trække sig sammen. Keratin er hår, negle og hud. Kollagen holder sener og knogler sammen.", "img": "Proteiner som byggemateriale."}, {"title": "Maskiner", "text": "Enzymer klipper og bygger molekyler, fx amylase, der klipper stivelse. Pumper i membranen flytter stoffer, fx natrium-kalium-pumpen.", "img": "Proteiner som værktøj."}, {"title": "Beskeder og forsvar", "text": "Nogle hormoner er proteiner, fx insulin. Antistoffer er Y-formede proteiner, der griber fat i virus og bakterier.", "img": "Breve og vagter."}, {"title": "Proteiner i maden", "text": "Kød, bønner og mælk indeholder proteiner. De er lange kæder af aminosyrer.", "img": "En perlekæde på tallerkenen."}, {"title": "Klippes i stykker", "text": "I fordøjelsen klipper enzymer, fx pepsin, kæderne i frie aminosyrer.", "img": "Kæden bliver til løse perler."}, {"title": "Ud med blodet", "text": "Aminosyrerne optages i blodet og fordeles til alle kroppens celler.", "img": "Perlerne sendes rundt."}, {"title": "Nyt protein", "text": "Cellen sætter aminosyrerne sammen i en ny rækkefølge efter opskriften i DNA og bygger sine egne proteiner.", "img": "Gamle perler, ny kæde."}, {"title": "Mønsteret", "text": "Det er rækkefølgen af de 20 klodser, der bestemmer, om det bliver et muskelprotein eller et enzym.", "img": "Som bogstaver, der danner forskellige ord."}], "words": [["Protein", "Lang kæde af aminosyrer, der er foldet."], ["Aminosyre", "Proteinets byggeklods. Der findes 20."], ["Enzym", "Protein, der får en reaktion til at gå hurtigere."], ["Antistof", "Forsvarsprotein, der griber fremmede ting."]], "remember": ["<b>Proteiner er kroppens arbejdere.</b>", "<b>20 klodser</b>, uendelig mange kombinationer.", "<b>Mad klippes, blod bringer, celle bygger.</b>"], "quiz": [{"q": "Hvilket protein findes i hår og negle?", "o": ["Keratin", "Insulin", "Amylase"], "a": 0, "why": "Keratin er et stærkt vævsprotein."}, {"q": "Hvad bestemmer, hvad et protein bliver til?", "o": ["Rækkefølgen af aminosyrer", "Farven", "Hvor gammel man er"], "a": 0, "why": "Som bogstaver i et ord."}], "note": "Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 81 (proteiners funktioner) og 82 (kroppens proteinstofskifte).", "no": 1, "series": {"name": "Proteiner", "items": [["proteinernes-job.html", "Proteinernes job", "Kroppens arbejdere"], ["aminosyrer.html", "Aminosyrer", "20 klodser med hver sin hat"], ["proteinets-fire-niveauer.html", "Fire niveauer", "Fra perlekæde til nøgle"], ["enzymer.html", "Enzymer", "Lås og nøgle"], ["hvad-paavirker-enzymer.html", "Hvad påvirker enzymer?", "Varme, syre og stopklods"]]}, "facts": []};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title; $('lede').innerHTML = D.lede;
+const MAP = D.series.items;
+$('eyebrow').textContent = `${D.series.name} · ${D.no} af ${MAP.length}`;
+$('map').innerHTML = MAP.map(([f, t, s], i) => `<a href="${f}" class="${i + 1 === D.no ? 'here' : ''}"${i + 1 === D.no ? ' aria-current="page"' : ''}><b>${i + 1}. ${t}</b>${s}</a>`).join('');
+const svg = document.querySelector('.scroll svg');
+const story = D.story; let cur = 0;
+$('dots').innerHTML = story.map((s, i) => `<button type="button" aria-label="Trin ${i + 1}" data-i="${i}"></button>`).join('');
+$('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$('steps').innerHTML = story.map((s, i) => `<li data-i="${i}"><div class="n">Trin ${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.img ? `<p class="img">${s.img}</p>` : ''}</li>`).join('');
+document.querySelectorAll('#steps li').forEach(li => li.onclick = () => { go(+li.dataset.i); svg.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+svg.querySelectorAll('[data-s]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => { const s = el.dataset.s.split(',').map(Number); go(s.includes(cur) ? s[(s.indexOf(cur) + 1) % s.length] : s[0]); });
+});
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur + 1} af ${story.length}`;
+  $('st-title').innerHTML = s.title; $('st-text').innerHTML = s.text; $('st-img').innerHTML = s.img || '';
+  svg.classList.add('dim');
+  svg.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('on', el.dataset.s.split(',').map(Number).includes(cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+  $('dots').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1); $('next').onclick = () => go(cur + 1);
+go(0);
+$('words').innerHTML = D.words.map(([w, d]) => `<div><b>${w}</b><span>${d}</span></div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi + 1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.onclick = () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a; b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  });
+});
+$('note').innerHTML = D.note;
+if (D.facts && D.facts.length) {
+  $('facts').innerHTML = D.facts.map(f => {
+    let vis = '';
+    if (f.bars) { const max = Math.max(...f.bars.map(b => b.v)); vis = `<div class="bars">${f.bars.map(b => `<div class="bar"><span>${b.l}</span><div class="track" role="img" aria-label="${b.l}"><div class="fill" style="width:${Math.max(1, b.v / max * 100)}%"></div></div></div>`).join('')}</div>`; }
+    return `<div class="fact"><div class="v">${f.v}</div><p>${f.d}</p>${vis}<div class="src">${f.src}</div></div>`;
+  }).join('');
+} else $('facts-sec').hidden = true;
+
+// Pæn orddeling: bløde bindestreger ved sammensætninger (/) eller ellers ved stavelser (|), mindst 4 tegn på hver side
+(() => {
+  const W = 'Celle/membranen Citronsyre/cyklussen Citronsyre/cyklus DNA-kopiering Elek|tro|fo|re|se Elektron/transport/kæden Energi/strømmen Fosfor/kredsløbet Gen/splejsning Kromosom/mutationer Kvælstoffets Kvælstof/nedfald Livs/cyklusser Lys/processerne Menstruations/cyklussen Menstruations/cyklus Nerve/impulsen Nerve/impulser Nerve/systemets Nerve/systemet Nerve/celler Primær/produktion Stamtavle-gåder Mi|to|kon|dri|et Mi|to|kon|dri|er|ne Hor|mo|ner|nes Hy|po|tha|la|mus Hy|po|fy|sen Me|ta|bo|lis|me Fo|to|syn|te|sen Fo|to|syn|te|se Re|spi|ra|tio|nen Re|spi|ra|tion Kvælstof/kredsløbet Kulstof/kredsløbet Kulstoffets Kul|hy|dra|ter Kul|hy|dra|ter|ne Blod/sukkeret Blod/sukker Amino/syrer Amino/syrerne Gly|ko|ly|se Gly|ko|ly|sen Kro|mo|so|mer Kro|mo|so|mer|ne Celle/deling Celle/væggen Celle/væg Bak|te|ri|er|ne Bak|te|ri|ens Ek|so|cy|to|se En|do|cy|to|se Transport/protein Transport/proteiner Sæd/celler Æg/celler Pro|te|i|ner|nes Pro|te|i|net Pro|te|i|ner Kæde/reaktion Stof/skifte Elektro/forese Gen/teknologi Fordøjelses/systemet Fordøjelsen Livs/cyklus Slægts/træ Kromosom/mutation Tarm/bakterier Mælke/sukker Mave/sækken Lever/celler Muskel/celler Muskel/fibre Hormon/kortet Post/væsenet Post/væsen Arve/anlæg'.split(' ');
+  const M = new Map();
+  for (const w of W) {
+    const sep = w.includes('/') ? '/' : '|'; const p = w.replace(/[|/]/g, ''); let out = '', pos = 0;
+    for (const part of w.replace(sep == '/' ? /\|/g : /\//g, '').split(sep)) { if (out && pos >= 4 && p.length - pos >= 4) out += '\u00AD'; out += part; pos += part.length; }
+    M.set(p, out); M.set(p.toLowerCase(), out.toLowerCase());
+  }
+  const re = /[A-Za-zÆØÅæøå-]{9,}/g;
+  window.hy = root => { const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('svg,script,style') ? 2 : 1 }); let n; while ((n = tw.nextNode())) { const t = n.nodeValue.replace(re, w => M.get(w) || w); if (t !== n.nodeValue) n.nodeValue = t; } };
+})();
+
+hy(document.body);
+</script>
+</body>
+</html>
