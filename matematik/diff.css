@@ -130,3 +130,17 @@ svg text { font-family: var(--font-body); fill: var(--fg); }
 .quiz .fb.ok { color: var(--up); } .quiz .fb.no { color: var(--down); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Pæn dansk orddeling: kun i hele stavelser, mindst 3 bogstaver på hver side af stregen,
+   kun ord på 7+ bogstaver, og aldrig to delte linjer i træk. Kræver lang="da". */
+p, li, h1, h2, h3, .lede, .pcard p, .readout {
+  -webkit-hyphens: auto; hyphens: auto;
+  hyphenate-limit-chars: 7 3 3;
+  -webkit-hyphenate-limit-before: 3; -webkit-hyphenate-limit-after: 3;
+  hyphenate-limit-lines: 2; -webkit-hyphenate-limit-lines: 2;
+  hyphenate-limit-last: always;
+  overflow-wrap: normal; word-break: normal;
+}
+/* overskrifter deles kun, hvis ordet ellers ikke kan være der */
+h1, h2, h3 { hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; }
+.math, button, .eyebrow, .back, label, svg text { -webkit-hyphens: manual; hyphens: manual; }
