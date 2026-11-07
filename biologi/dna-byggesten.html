@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DNA’s byggesten</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: kort over de fire bidder øverst, derefter én stor tegning, der bygges op trin for trin, og en fortæller-boks under den. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --accent: #3d7f2e; --accent-soft: #e3f0dc;
+  --leaf: #4f9a3a; --leaf-soft: #cfe6c4; --sun: #e0a100; --sun-soft: #fbedc4;
+  --water: #2f7fc1; --water-soft: #d6e8f6; --hplus: #d0582a; --electron: #7b4bc4;
+  --carbon: #26302b; --air: #c2412f; --membrane: #b9d3a8; --stroma: #eef6e7; --lumen: #fbeee4;
+  --node: #ffffff; --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --accent: #8fd67a; --accent-soft: #1e2f1a;
+    --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+    --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+    --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --accent: #8fd67a; --accent-soft: #1e2f1a;
+  --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+  --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+  --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; } h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+
+/* Kort over bidderne */
+.map { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.map a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); text-decoration: none; font-size: .9rem; min-width: 0; }
+.map a b { font-family: var(--font-display); color: var(--fg); font-size: 1rem; }
+.map a.here { border-color: var(--accent); background: var(--accent-soft); }
+.map a.here b { color: var(--accent); }
+.map a:hover { border-color: var(--accent); }
+@media (max-width: 620px) { .map { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.fact { border-left: 4px solid var(--accent); padding-left: 14px; display: grid; gap: 6px; }
+.fact .v { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--accent); }
+.fact .src { font-size: .8rem; color: var(--muted); }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 8em 1fr; gap: 10px; align-items: center; font-size: .9rem; }
+.bar .track { height: 14px; border-radius: 7px; background: var(--accent-soft); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; background: var(--accent); }
+
+/* Tegning */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: var(--font-body); fill: var(--fg); font-size: 14px; }
+svg .t { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 700; }
+[data-s] { transition: opacity .3s; }
+.dim [data-s]:not(.on) { opacity: .22; }
+.on .glow, .on.glow { filter: drop-shadow(0 0 6px var(--sun)); }
+.flow { stroke-dasharray: 8 7; }
+.on .flow, .on.flow { animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -30; } }
+.spin { transform-box: fill-box; transform-origin: center; }
+.on .spin { animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hint { font-size: .88rem; color: var(--muted); padding: 10px 18px 0; }
+.story { display: grid; gap: 12px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); margin-top: 12px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story p { max-width: 70ch; }
+.story .img { font-style: italic; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 1.5px solid var(--accent); background: var(--surface); }
+.dots button.on { background: var(--accent); }
+
+.section { display: grid; gap: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; color: var(--accent); }
+.steps .img { font-size: .92rem; color: var(--muted); font-style: italic; }
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 24px; }
+.words div { display: grid; gap: 2px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.words b { font-family: var(--font-display); }
+.words span { color: var(--muted); font-size: .95rem; }
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.q button.wrong { background: var(--hplus); border-color: var(--hplus); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Orddeling: browserens danske ordbog (stavelser), min. 10 tegn og 4 tegn på hver side. Bløde bindestreger i lange titelord dækker browsere uden dansk ordbog. */
+h1, h2, h3, p, li, .card, a { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <nav class="map" id="map" aria-label="Emner i serien"></nav>
+
+  <section class="card" aria-label="Tegning">
+    <p class="hint">Tryk Næste for at bygge tegningen op, eller tryk direkte på noget i tegningen.</p>
+    <div class="scroll"><svg viewBox="0 0 820 490" role="img" aria-label="De fire DNA-baser som farvede brikker, A passer med T og G med C, og en stige der snoes"><defs>
+<marker id="m-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+<marker id="m-sun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--sun)"/></marker>
+<marker id="m-water" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--water)"/></marker>
+<marker id="m-leaf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--leaf)"/></marker>
+<marker id="m-air" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--air)"/></marker>
+<marker id="m-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--electron)"/></marker>
+<marker id="m-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--hplus)"/></marker>
+<marker id="m-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+<marker id="m-fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fg)"/></marker>
+</defs>
+<g data-s="0"><text x="200" y="40" text-anchor="middle" class="t">Fire brikker</text>
+<rect x="55.0" y="74.0" width="50" height="32" rx="4" style="fill:var(--leaf)"/><text x="80" y="95" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><text x="80" y="130" text-anchor="middle" class="small">adenin</text>
+<rect x="135.0" y="74.0" width="50" height="32" rx="4" style="fill:var(--hplus)"/><text x="160" y="95" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><text x="160" y="130" text-anchor="middle" class="small">thymin</text>
+<rect x="215.0" y="74.0" width="50" height="32" rx="4" style="fill:var(--sun)"/><text x="240" y="95" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><text x="240" y="130" text-anchor="middle" class="small">guanin</text>
+<rect x="295.0" y="74.0" width="50" height="32" rx="4" style="fill:var(--water)"/><text x="320" y="95" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><text x="320" y="130" text-anchor="middle" class="small">cytosin</text>
+</g>
+<g data-s="1"><text x="200" y="190" text-anchor="middle" class="b">Hver brik er en nukleotid</text>
+<circle cx="120" cy="250" r="14" style="fill:var(--muted)"/><text x="120" y="285" text-anchor="middle" class="small">fosfat</text><path d="M150,235 L180,235 L190,250 L180,265 L150,265 L140,250 Z" style="fill:var(--node-line)"/><text x="165" y="285" text-anchor="middle" class="small">sukker</text><rect x="215.0" y="235.0" width="50" height="30" rx="4" style="fill:var(--leaf)"/><text x="240" y="255" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><text x="240" y="285" text-anchor="middle" class="small">base</text></g>
+<g data-s="2"><text x="200" y="340" text-anchor="middle" class="b">Kun to par passer</text><rect x="68.0" y="379.0" width="50" height="22" rx="4" style="fill:var(--leaf)"/><text x="93.0" y="395" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="122.0" y="379.0" width="50" height="22" rx="4" style="fill:var(--hplus)"/><text x="147.0" y="395" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><rect x="238.0" y="379.0" width="50" height="22" rx="4" style="fill:var(--sun)"/><text x="263.0" y="395" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><rect x="292.0" y="379.0" width="50" height="22" rx="4" style="fill:var(--water)"/><text x="317.0" y="395" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><text x="120" y="425" text-anchor="middle" class="small b">A med T</text><text x="290" y="425" text-anchor="middle" class="small b">G med C</text></g>
+<g data-s="3,4"><text x="560" y="40" text-anchor="middle" class="t">En stige</text></g>
+<g data-s="3"><path d="M520,66 L520,414" style="stroke:var(--fg);stroke-width:6;stroke-linecap:round"/><path d="M600,66 L600,414" style="stroke:var(--fg);stroke-width:6;stroke-linecap:round"/><rect x="528.0" y="69.0" width="30" height="22" rx="4" style="fill:var(--leaf)"/><text x="543.0" y="85" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="562.0" y="69.0" width="30" height="22" rx="4" style="fill:var(--hplus)"/><text x="577.0" y="85" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><rect x="528.0" y="101.0" width="30" height="22" rx="4" style="fill:var(--hplus)"/><text x="543.0" y="117" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><rect x="562.0" y="101.0" width="30" height="22" rx="4" style="fill:var(--leaf)"/><text x="577.0" y="117" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="528.0" y="133.0" width="30" height="22" rx="4" style="fill:var(--sun)"/><text x="543.0" y="149" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><rect x="562.0" y="133.0" width="30" height="22" rx="4" style="fill:var(--water)"/><text x="577.0" y="149" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><rect x="528.0" y="165.0" width="30" height="22" rx="4" style="fill:var(--water)"/><text x="543.0" y="181" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><rect x="562.0" y="165.0" width="30" height="22" rx="4" style="fill:var(--sun)"/><text x="577.0" y="181" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><rect x="528.0" y="197.0" width="30" height="22" rx="4" style="fill:var(--leaf)"/><text x="543.0" y="213" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="562.0" y="197.0" width="30" height="22" rx="4" style="fill:var(--hplus)"/><text x="577.0" y="213" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><rect x="528.0" y="229.0" width="30" height="22" rx="4" style="fill:var(--hplus)"/><text x="543.0" y="245" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><rect x="562.0" y="229.0" width="30" height="22" rx="4" style="fill:var(--leaf)"/><text x="577.0" y="245" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="528.0" y="261.0" width="30" height="22" rx="4" style="fill:var(--sun)"/><text x="543.0" y="277" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><rect x="562.0" y="261.0" width="30" height="22" rx="4" style="fill:var(--water)"/><text x="577.0" y="277" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><rect x="528.0" y="293.0" width="30" height="22" rx="4" style="fill:var(--water)"/><text x="543.0" y="309" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><rect x="562.0" y="293.0" width="30" height="22" rx="4" style="fill:var(--sun)"/><text x="577.0" y="309" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><rect x="528.0" y="325.0" width="30" height="22" rx="4" style="fill:var(--sun)"/><text x="543.0" y="341" text-anchor="middle" class="small b" style="fill:var(--surface)">G</text><rect x="562.0" y="325.0" width="30" height="22" rx="4" style="fill:var(--water)"/><text x="577.0" y="341" text-anchor="middle" class="small b" style="fill:var(--surface)">C</text><rect x="528.0" y="357.0" width="30" height="22" rx="4" style="fill:var(--hplus)"/><text x="543.0" y="373" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><rect x="562.0" y="357.0" width="30" height="22" rx="4" style="fill:var(--leaf)"/><text x="577.0" y="373" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="528.0" y="389.0" width="30" height="22" rx="4" style="fill:var(--leaf)"/><text x="543.0" y="405" text-anchor="middle" class="small b" style="fill:var(--surface)">A</text><rect x="562.0" y="389.0" width="30" height="22" rx="4" style="fill:var(--hplus)"/><text x="577.0" y="405" text-anchor="middle" class="small b" style="fill:var(--surface)">T</text><text x="560" y="472" text-anchor="middle" class="small">sider: sukker og fosfat. trin: basepar</text></g>
+<g data-s="4"><path d="M480,80 L480,420" style="fill:none;stroke:var(--fg);stroke-width:3" marker-end="url(#m-fg)"/><path d="M640,420 L640,80" style="fill:none;stroke:var(--muted);stroke-width:3" marker-end="url(#m-dark)"/><text x="468" y="250" text-anchor="end" class="small b">ned</text><text x="652" y="250" text-anchor="start" class="small b">op</text></g>
+<g data-s="5"><path d="M740.0,80.0 L740.0,80.0" style="stroke:var(--leaf);stroke-width:4"/><path d="M767.5,97.0 L712.5,97.0" style="stroke:var(--sun);stroke-width:4"/><path d="M772.3,114.0 L707.7,114.0" style="stroke:var(--water);stroke-width:4"/><path d="M750.5,131.0 L729.5,131.0" style="stroke:var(--hplus);stroke-width:4"/><path d="M720.0,148.0 L760.0,148.0" style="stroke:var(--leaf);stroke-width:4"/><path d="M706.0,165.0 L774.0,165.0" style="stroke:var(--sun);stroke-width:4"/><path d="M720.0,182.0 L760.0,182.0" style="stroke:var(--water);stroke-width:4"/><path d="M750.5,199.0 L729.5,199.0" style="stroke:var(--hplus);stroke-width:4"/><path d="M772.3,216.0 L707.7,216.0" style="stroke:var(--leaf);stroke-width:4"/><path d="M767.5,233.0 L712.5,233.0" style="stroke:var(--sun);stroke-width:4"/><path d="M740.0,250.0 L740.0,250.0" style="stroke:var(--water);stroke-width:4"/><path d="M712.5,267.0 L767.5,267.0" style="stroke:var(--hplus);stroke-width:4"/><path d="M707.7,284.0 L772.3,284.0" style="stroke:var(--leaf);stroke-width:4"/><path d="M729.5,301.0 L750.5,301.0" style="stroke:var(--sun);stroke-width:4"/><path d="M760.0,318.0 L720.0,318.0" style="stroke:var(--water);stroke-width:4"/><path d="M774.0,335.0 L706.0,335.0" style="stroke:var(--hplus);stroke-width:4"/><path d="M760.0,352.0 L720.0,352.0" style="stroke:var(--leaf);stroke-width:4"/><path d="M729.5,369.0 L750.5,369.0" style="stroke:var(--sun);stroke-width:4"/><path d="M707.7,386.0 L772.3,386.0" style="stroke:var(--water);stroke-width:4"/><path d="M712.5,403.0 L767.5,403.0" style="stroke:var(--hplus);stroke-width:4"/><path d="M740.0,420.0 L740.0,420.0" style="stroke:var(--leaf);stroke-width:4"/><path d="M740.0,80.0 L750.5,85.7 L760.0,91.3 L767.5,97.0 L772.3,102.7 L774.0,108.3 L772.3,114.0 L767.5,119.7 L760.0,125.3 L750.5,131.0 L740.0,136.7 L729.5,142.3 L720.0,148.0 L712.5,153.7 L707.7,159.3 L706.0,165.0 L707.7,170.7 L712.5,176.3 L720.0,182.0 L729.5,187.7 L740.0,193.3 L750.5,199.0 L760.0,204.7 L767.5,210.3 L772.3,216.0 L774.0,221.7 L772.3,227.3 L767.5,233.0 L760.0,238.7 L750.5,244.3 L740.0,250.0 L729.5,255.7 L720.0,261.3 L712.5,267.0 L707.7,272.7 L706.0,278.3 L707.7,284.0 L712.5,289.7 L720.0,295.3 L729.5,301.0 L740.0,306.7 L750.5,312.3 L760.0,318.0 L767.5,323.7 L772.3,329.3 L774.0,335.0 L772.3,340.7 L767.5,346.3 L760.0,352.0 L750.5,357.7 L740.0,363.3 L729.5,369.0 L720.0,374.7 L712.5,380.3 L707.7,386.0 L706.0,391.7 L707.7,397.3 L712.5,403.0 L720.0,408.7 L729.5,414.3 L740.0,420.0" style="fill:none;stroke:var(--fg);stroke-width:4"/><path d="M740.0,80.0 L729.5,85.7 L720.0,91.3 L712.5,97.0 L707.7,102.7 L706.0,108.3 L707.7,114.0 L712.5,119.7 L720.0,125.3 L729.5,131.0 L740.0,136.7 L750.5,142.3 L760.0,148.0 L767.5,153.7 L772.3,159.3 L774.0,165.0 L772.3,170.7 L767.5,176.3 L760.0,182.0 L750.5,187.7 L740.0,193.3 L729.5,199.0 L720.0,204.7 L712.5,210.3 L707.7,216.0 L706.0,221.7 L707.7,227.3 L712.5,233.0 L720.0,238.7 L729.5,244.3 L740.0,250.0 L750.5,255.7 L760.0,261.3 L767.5,267.0 L772.3,272.7 L774.0,278.3 L772.3,284.0 L767.5,289.7 L760.0,295.3 L750.5,301.0 L740.0,306.7 L729.5,312.3 L720.0,318.0 L712.5,323.7 L707.7,329.3 L706.0,335.0 L707.7,340.7 L712.5,346.3 L720.0,352.0 L729.5,357.7 L740.0,363.3 L750.5,369.0 L760.0,374.7 L767.5,380.3 L772.3,386.0 L774.0,391.7 L772.3,397.3 L767.5,403.0 L760.0,408.7 L750.5,414.3 L740.0,420.0" style="fill:none;stroke:var(--muted);stroke-width:4"/><text x="740" y="450" text-anchor="middle" class="small b">snoet: dobbelt spiral</text></g>
+</svg></div>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div><div class="count" id="count"></div><h3 id="st-title"></h3></div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="img" id="st-img"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Alle trin på én gang</h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section" id="facts-sec">
+    <h2>Set i bogen</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="section">
+    <h2>Ord, du møder</h2>
+    <div class="words" id="words"></div>
+  </section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+<script>
+const D = {"title": "DNA’s byggesten", "lede": "DNA er bygget af kun fire slags brikker. De passer sammen i to faste par. Det simple mønster er nøglen til alt: at DNA kan kopieres og læses.", "story": [{"title": "Fire brikker", "text": "DNA har fire baser: adenin (A), thymin (T), guanin (G) og cytosin (C).", "img": "Fire farver."}, {"title": "Nukleotiden", "text": "Hver brik er en nukleotid: et fosfat, et sukker (deoxyribose) og en base.", "img": "Tre dele i én brik."}, {"title": "Faste par", "text": "A passer kun med T, og G passer kun med C. De holdes sammen af svage hydrogenbindinger.", "img": "Grøn med rød, gul med blå."}, {"title": "En stige", "text": "DNA er som en stige. Siderne er sukker og fosfat. Trinene er basepar.", "img": "Læs den ene side, og du kender den anden."}, {"title": "Modsat retning", "text": "De to sider løber hver sin vej, som to vejbaner.", "img": "En vej op og en vej ned."}, {"title": "Den snoede stige", "text": "Stigen er snoet om sig selv. Det er den berømte dobbelte spiral.", "img": "En vindeltrappe."}], "words": [["Base", "A, T, G eller C: bogstaverne i DNA."], ["Nukleotid", "Fosfat + sukker + base."], ["Basepar", "To baser, der passer sammen: A-T eller G-C."]], "remember": ["<b>A med T, G med C.</b>", "<b>Stige: sider af sukker og fosfat, trin af basepar.</b>", "<b>Kender du den ene side, kender du den anden.</b>"], "quiz": [{"q": "Hvilken base passer med G?", "o": ["A", "T", "C"], "a": 2, "why": "G passer altid med C."}, {"q": "En streng er ATTG. Hvad står på den anden?", "o": ["TAAC", "ATTG", "GCCA"], "a": 0, "why": "A-T, T-A, T-A, G-C."}], "note": "Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 98 (de fire nukleotider) og 99 (DNA-molekylets opbygning). Kemiske formler er erstattet af farvede brikker.", "no": 2, "series": {"name": "DNA", "items": [["fra-kromosom-til-dna.html", "Fra kromosom til DNA", "Zoom ind"], ["dna-byggesten.html", "DNA’s byggesten", "Fire brikker, to par"], ["dna-kopiering.html", "DNA-kopiering", "Lynlåsen åbnes"], ["fra-gen-til-protein.html", "Fra gen til protein", "Kopi, klip og byg"], ["den-genetiske-kode.html", "Den genetiske kode", "Tre bogstaver, ét ord"]]}, "facts": []};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title; $('lede').innerHTML = D.lede;
+const MAP = D.series.items;
+$('eyebrow').textContent = `${D.series.name} · ${D.no} af ${MAP.length}`;
+$('map').innerHTML = MAP.map(([f, t, s], i) => `<a href="${f}" class="${i + 1 === D.no ? 'here' : ''}"${i + 1 === D.no ? ' aria-current="page"' : ''}><b>${i + 1}. ${t}</b>${s}</a>`).join('');
+const svg = document.querySelector('.scroll svg');
+const story = D.story; let cur = 0;
+$('dots').innerHTML = story.map((s, i) => `<button type="button" aria-label="Trin ${i + 1}" data-i="${i}"></button>`).join('');
+$('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$('steps').innerHTML = story.map((s, i) => `<li data-i="${i}"><div class="n">Trin ${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.img ? `<p class="img">${s.img}</p>` : ''}</li>`).join('');
+document.querySelectorAll('#steps li').forEach(li => li.onclick = () => { go(+li.dataset.i); svg.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+svg.querySelectorAll('[data-s]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => { const s = el.dataset.s.split(',').map(Number); go(s.includes(cur) ? s[(s.indexOf(cur) + 1) % s.length] : s[0]); });
+});
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur + 1} af ${story.length}`;
+  $('st-title').innerHTML = s.title; $('st-text').innerHTML = s.text; $('st-img').innerHTML = s.img || '';
+  svg.classList.add('dim');
+  svg.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('on', el.dataset.s.split(',').map(Number).includes(cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+  $('dots').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1); $('next').onclick = () => go(cur + 1);
+go(0);
+$('words').innerHTML = D.words.map(([w, d]) => `<div><b>${w}</b><span>${d}</span></div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi + 1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.onclick = () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a; b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  });
+});
+$('note').innerHTML = D.note;
+if (D.facts && D.facts.length) {
+  $('facts').innerHTML = D.facts.map(f => {
+    let vis = '';
+    if (f.bars) { const max = Math.max(...f.bars.map(b => b.v)); vis = `<div class="bars">${f.bars.map(b => `<div class="bar"><span>${b.l}</span><div class="track" role="img" aria-label="${b.l}"><div class="fill" style="width:${Math.max(1, b.v / max * 100)}%"></div></div></div>`).join('')}</div>`; }
+    return `<div class="fact"><div class="v">${f.v}</div><p>${f.d}</p>${vis}<div class="src">${f.src}</div></div>`;
+  }).join('');
+} else $('facts-sec').hidden = true;
+
+// Pæn orddeling: bløde bindestreger ved sammensætninger (/) eller ellers ved stavelser (|), mindst 4 tegn på hver side
+(() => {
+  const W = 'Celle/membranen Citronsyre/cyklussen Citronsyre/cyklus DNA-kopiering Elek|tro|fo|re|se Elektron/transport/kæden Energi/strømmen Fosfor/kredsløbet Gen/splejsning Kromosom/mutationer Kvælstoffets Kvælstof/nedfald Livs/cyklusser Lys/processerne Menstruations/cyklussen Menstruations/cyklus Nerve/impulsen Nerve/impulser Nerve/systemets Nerve/systemet Nerve/celler Primær/produktion Stamtavle-gåder Mi|to|kon|dri|et Mi|to|kon|dri|er|ne Hor|mo|ner|nes Hy|po|tha|la|mus Hy|po|fy|sen Me|ta|bo|lis|me Fo|to|syn|te|sen Fo|to|syn|te|se Re|spi|ra|tio|nen Re|spi|ra|tion Kvælstof/kredsløbet Kulstof/kredsløbet Kulstoffets Kul|hy|dra|ter Kul|hy|dra|ter|ne Blod/sukkeret Blod/sukker Amino/syrer Amino/syrerne Gly|ko|ly|se Gly|ko|ly|sen Kro|mo|so|mer Kro|mo|so|mer|ne Celle/deling Celle/væggen Celle/væg Bak|te|ri|er|ne Bak|te|ri|ens Ek|so|cy|to|se En|do|cy|to|se Transport/protein Transport/proteiner Sæd/celler Æg/celler Pro|te|i|ner|nes Pro|te|i|net Pro|te|i|ner Kæde/reaktion Stof/skifte Elektro/forese Gen/teknologi Fordøjelses/systemet Fordøjelsen Livs/cyklus Slægts/træ Kromosom/mutation Tarm/bakterier Mælke/sukker Mave/sækken Lever/celler Muskel/celler Muskel/fibre Hormon/kortet Post/væsenet Post/væsen Arve/anlæg'.split(' ');
+  const M = new Map();
+  for (const w of W) {
+    const sep = w.includes('/') ? '/' : '|'; const p = w.replace(/[|/]/g, ''); let out = '', pos = 0;
+    for (const part of w.replace(sep == '/' ? /\|/g : /\//g, '').split(sep)) { if (out && pos >= 4 && p.length - pos >= 4) out += '\u00AD'; out += part; pos += part.length; }
+    M.set(p, out); M.set(p.toLowerCase(), out.toLowerCase());
+  }
+  const re = /[A-Za-zÆØÅæøå-]{9,}/g;
+  window.hy = root => { const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('svg,script,style') ? 2 : 1 }); let n; while ((n = tw.nextNode())) { const t = n.nodeValue.replace(re, w => M.get(w) || w); if (t !== n.nodeValue) n.nodeValue = t; } };
+})();
+
+hy(document.body);
+</script>
+</body>
+</html>

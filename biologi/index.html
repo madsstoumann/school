@@ -51,6 +51,9 @@ a.card svg path { fill: var(--a); }
 a.card svg text { fill: var(--a); font-family: var(--font-display); font-weight: 800; font-size: 20px; }
 .how { font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 @media (prefers-reduced-motion: reduce) { a.card { transition: none; } }
+
+/* Orddeling: browserens danske ordbog (stavelser), min. 10 tegn og 4 tegn på hver side. Bløde bindestreger i lange titelord dækker browsere uden dansk ordbog. */
+h1, h2, h3, p, li, .card, a { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; overflow-wrap: break-word; }
 </style>
 
 <style>.back { color: var(--brand); font-weight: 700; text-decoration: none; justify-self: start; } .back:hover { text-decoration: underline; }</style>
@@ -99,7 +102,51 @@ const TOPICS = [
   { no: 10, chapter: 'Skovene', file: 'succession.html', title: '2. Succession', text: 'Fra bar jord til moden skov af sig selv.', symbol: '2', color: '--c' },
   { no: 10, chapter: 'Skovene', file: 'skovens-sundhed.html', title: '3. Skovens sundhed', text: 'En tynd krone er et stresset træ.', symbol: '3', color: '--c' },
   { no: 10, chapter: 'Skovene', file: 'kvaelstofnedfald.html', title: '4. Kvælstofnedfald', text: 'Gødning fra luften. Lidt er godt, meget er for meget.', symbol: '4', color: '--c' },
+  { no: 1, chapter: 'Cellen', file: 'cellens-byggesaet.html', title: '1. Cellens byggesæt', text: 'Bakterie, plante, svamp og dyr. Hvem har hvad?', symbol: '1', color: '--n' },
+  { no: 1, chapter: 'Cellen', file: 'cellemembranen.html', title: '2. Cellemembranen', text: 'Hoveder, der elsker vand, haler, der hader det.', symbol: '2', color: '--n' },
+  { no: 1, chapter: 'Cellen', file: 'transport-over-membranen.html', title: '3. Transport', text: 'Ned ad bakke gratis, op ad bakke koster ATP.', symbol: '3', color: '--n' },
+  { no: 1, chapter: 'Cellen', file: 'endo-og-exocytose.html', title: '4. Endo- og exocytose', text: 'Cellen spiser og spytter ud i poser.', symbol: '4', color: '--n' },
+  { no: 1, chapter: 'Cellen', file: 'bakteriens-cellevaeg.html', title: '5. Bakteriens cellevæg', text: 'Lilla eller lyserød: tyk eller tynd væg.', symbol: '5', color: '--n' },
+  { no: 1, chapter: 'Cellen', file: 'celledeling.html', title: '6. Celledeling', text: 'Mitose kopierer, meiose halverer.', symbol: '6', color: '--n' },
+  { no: 5, chapter: 'Proteiner', file: 'proteinernes-job.html', title: '1. Proteinernes job', text: 'Kroppens arbejdere: bygger, klipper, pumper og forsvarer.', symbol: '1', color: '--p' },
+  { no: 5, chapter: 'Proteiner', file: 'aminosyrer.html', title: '2. Aminosyrer', text: '20 klodser med samme krop og hver sin hat.', symbol: '2', color: '--p' },
+  { no: 5, chapter: 'Proteiner', file: 'proteinets-fire-niveauer.html', title: '3. Fire niveauer', text: 'Fra perlekæde til foldet nøgle.', symbol: '3', color: '--p' },
+  { no: 5, chapter: 'Proteiner', file: 'enzymer.html', title: '4. Enzymer', text: 'Lås og nøgle, og en lavere bakke.', symbol: '4', color: '--p' },
+  { no: 5, chapter: 'Proteiner', file: 'hvad-paavirker-enzymer.html', title: '5. Hvad påvirker enzymer?', text: 'Varme, syre og en indbygget stopklods.', symbol: '5', color: '--p' },
+  { no: 6, chapter: 'DNA', file: 'fra-kromosom-til-dna.html', title: '1. Fra kromosom til DNA', text: 'Zoom ind: celle, kerne, kromosom og spiral.', symbol: '1', color: '--n' },
+  { no: 6, chapter: 'DNA', file: 'dna-byggesten.html', title: '2. DNA’s byggesten', text: 'Fire brikker, to faste par.', symbol: '2', color: '--n' },
+  { no: 6, chapter: 'DNA', file: 'dna-kopiering.html', title: '3. DNA-kopiering', text: 'Lynlåsen åbnes, og hver halvdel får en ny partner.', symbol: '3', color: '--n' },
+  { no: 6, chapter: 'DNA', file: 'fra-gen-til-protein.html', title: '4. Fra gen til protein', text: 'Kopi, klip, send og byg.', symbol: '4', color: '--n' },
+  { no: 6, chapter: 'DNA', file: 'den-genetiske-kode.html', title: '5. Den genetiske kode', text: 'Tre bogstaver, ét ord.', symbol: '5', color: '--n' },
+  { no: 7, chapter: 'Genteknologi', file: 'naar-et-gen-fejler.html', title: '1. Når ét gen fejler', text: 'Cystisk fibrose: tre bogstaver væk, kanalen lukket.', symbol: '1', color: '--p' },
+  { no: 7, chapter: 'Genteknologi', file: 'pcr.html', title: '2. PCR', text: 'DNA-kopimaskinen: varmt, køligere, lunt.', symbol: '2', color: '--p' },
+  { no: 7, chapter: 'Genteknologi', file: 'elektroforese.html', title: '3. Elektroforese og DNA-profil', text: 'Kort løber længst. Hvem var på gerningsstedet?', symbol: '3', color: '--p' },
+  { no: 7, chapter: 'Genteknologi', file: 'gensplejsning.html', title: '4. Gensplejsning', text: 'Klip, indsæt, lim, og bakterier laver insulin.', symbol: '4', color: '--p' },
+  { no: 8, chapter: 'Evolution og arv', file: 'livets-doegn.html', title: '1. Livets døgn', text: 'Jordens historie på 24 timer. Mennesket kommer kl. 23.59.57.', symbol: '1', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'bakterier-og-virus.html', title: '2. Bakterier og virus', text: 'Opsamling, rør og virus: gener på afveje.', symbol: '2', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'livscyklusser.html', title: '3. Livscyklusser', text: 'Flåt, mos og æbletræ går alle i ring.', symbol: '3', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'slaegtskab.html', title: '4. Slægtskab', text: 'Haj og delfin ligner hinanden, men er ikke i familie.', symbol: '4', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'arv-og-dominans.html', title: '5. Arv og dominans', text: 'Krydsningsskemaet: tre røde, én hvid.', symbol: '5', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'epistasi.html', title: '6. Epistasi', text: 'To gener skal samarbejde: 9 grønne, 7 hvide.', symbol: '6', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'stamtavle-gaader.html', title: '7. Stamtavle-gåder', text: 'Find arvegangen i familiebilledet.', symbol: '7', color: '--c' },
+  { no: 8, chapter: 'Evolution og arv', file: 'kromosommutationer.html', title: '8. Kromosommutationer', text: 'Tab, dobbelt, byttet og vendt.', symbol: '8', color: '--c' },
+  { no: 3, chapter: 'Nerver', file: 'nervesystemets-kort.html', title: '1. Nervesystemets kort', text: 'Hovedvej, sideveje, speeder og bremse.', symbol: '1', color: '--n' },
+  { no: 3, chapter: 'Nerver', file: 'hjernen.html', title: '2. Hjernen', text: 'Fire lapper, lillehjernen og stammen.', symbol: '2', color: '--n' },
+  { no: 3, chapter: 'Nerver', file: 'neuronet.html', title: '3. Neuronet', text: 'Antenne, krop, kabel og stik.', symbol: '3', color: '--n' },
+  { no: 3, chapter: 'Nerver', file: 'nerveimpulsen.html', title: '4. Nerveimpulsen', text: 'En bølge af plus og minus.', symbol: '4', color: '--n' },
+  { no: 3, chapter: 'Nerver', file: 'synapsen.html', title: '5. Synapsen', text: 'Kløften, hvor signalet bliver til kemi.', symbol: '5', color: '--n' },
+  { no: 3, chapter: 'Nerver', file: 'agonist-og-antagonist.html', title: '6. Agonist og antagonist', text: 'Falske nøgler, der åbner eller blokerer.', symbol: '6', color: '--n' },
+  { no: 4, chapter: 'Hormoner', file: 'hormonernes-postvaesen.html', title: '1. Kroppens postvæsen', text: 'Hormoner er breve med blodet.', symbol: '1', color: '--p' },
+  { no: 4, chapter: 'Hormoner', file: 'hormonkortet.html', title: '2. Hormonkortet', text: 'Hvem sender hvad, og hvorfor.', symbol: '2', color: '--p' },
+  { no: 4, chapter: 'Hormoner', file: 'hypothalamus-og-hypofysen.html', title: '3. Hypothalamus og hypofysen', text: 'Chefen, mellemlederen og stressens to veje.', symbol: '3', color: '--p' },
+  { no: 4, chapter: 'Hormoner', file: 'negativ-feedback.html', title: '4. Negativ feedback', text: 'Kroppens termostat.', symbol: '4', color: '--p' },
+  { no: 4, chapter: 'Hormoner', file: 'menstruationscyklus.html', title: '5. Menstruationscyklussen', text: '28 dage i ring.', symbol: '5', color: '--p' },
+  { no: 4, chapter: 'Hormoner', file: 'hvordan-hormoner-virker.html', title: '6. Hvordan hormoner virker', text: 'Fedt går ind, vand ringer på.', symbol: '6', color: '--p' },
   { eyebrow: 'Ekstra', chapter: 'Biologi i den virkelige verden', file: 'fra-planter-til-hollywood.html', title: 'Fra planter til Hollywood', text: 'Hvordan cellulose blev til celluloid og film. Med eksplosioner.', symbol: '★', color: '--p' },
+  { eyebrow: 'Ekstra', chapter: 'Biologi med et glimt i øjet', file: 'mitokondriet-der-flyttede-ind.html', title: 'Mitokondriet, der flyttede ind', text: 'Verdens længste lejekontrakt. Den gælder stadig.', symbol: 'M', color: '--c' },
+  { eyebrow: 'Ekstra', chapter: 'Biologi med et glimt i øjet', file: 'csi-elektroforese.html', title: 'CSI: Elektroforese', text: 'Kagedåsen er tom. DNA-sporet afslører tyven.', symbol: '?', color: '--n' },
+  { eyebrow: 'Ekstra', chapter: 'Biologi med et glimt i øjet', file: 'kaffe-mod-traethed.html', title: 'Kaffe mod træthed', text: 'Koffein er en falsk nøgle i hjernens træthedslåse.', symbol: 'K', color: '--p' },
+  { eyebrow: 'Ekstra', chapter: 'Biologi med et glimt i øjet', file: 'enzymernes-datingside.html', title: 'Enzymernes datingside', text: 'De mest kræsne singler. Kun ét match passer.', symbol: '♥', color: '--c' },
 ];
 const groups = {};
 [...TOPICS].sort((a, b) => (a.no ?? 99) - (b.no ?? 99)).forEach(t => (groups[t.chapter] ||= []).push(t));
@@ -115,6 +162,21 @@ document.getElementById('chapters').innerHTML = Object.entries(groups).map(([ch,
       </a>`).join('')}
     </div>
   </section>`).join('');
+
+// Pæn orddeling: bløde bindestreger ved sammensætninger (/) eller ellers ved stavelser (|), mindst 4 tegn på hver side
+(() => {
+  const W = 'Celle/membranen Citronsyre/cyklussen Citronsyre/cyklus DNA-kopiering Elek|tro|fo|re|se Elektron/transport/kæden Energi/strømmen Fosfor/kredsløbet Gen/splejsning Kromosom/mutationer Kvælstoffets Kvælstof/nedfald Livs/cyklusser Lys/processerne Menstruations/cyklussen Menstruations/cyklus Nerve/impulsen Nerve/impulser Nerve/systemets Nerve/systemet Nerve/celler Primær/produktion Stamtavle-gåder Mi|to|kon|dri|et Mi|to|kon|dri|er|ne Hor|mo|ner|nes Hy|po|tha|la|mus Hy|po|fy|sen Me|ta|bo|lis|me Fo|to|syn|te|sen Fo|to|syn|te|se Re|spi|ra|tio|nen Re|spi|ra|tion Kvælstof/kredsløbet Kulstof/kredsløbet Kulstoffets Kul|hy|dra|ter Kul|hy|dra|ter|ne Blod/sukkeret Blod/sukker Amino/syrer Amino/syrerne Gly|ko|ly|se Gly|ko|ly|sen Kro|mo|so|mer Kro|mo|so|mer|ne Celle/deling Celle/væggen Celle/væg Bak|te|ri|er|ne Bak|te|ri|ens Ek|so|cy|to|se En|do|cy|to|se Transport/protein Transport/proteiner Sæd/celler Æg/celler Pro|te|i|ner|nes Pro|te|i|net Pro|te|i|ner Kæde/reaktion Stof/skifte Elektro/forese Gen/teknologi Fordøjelses/systemet Fordøjelsen Livs/cyklus Slægts/træ Kromosom/mutation Tarm/bakterier Mælke/sukker Mave/sækken Lever/celler Muskel/celler Muskel/fibre Hormon/kortet Post/væsenet Post/væsen Arve/anlæg'.split(' ');
+  const M = new Map();
+  for (const w of W) {
+    const sep = w.includes('/') ? '/' : '|'; const p = w.replace(/[|/]/g, ''); let out = '', pos = 0;
+    for (const part of w.replace(sep == '/' ? /\|/g : /\//g, '').split(sep)) { if (out && pos >= 4 && p.length - pos >= 4) out += '\u00AD'; out += part; pos += part.length; }
+    M.set(p, out); M.set(p.toLowerCase(), out.toLowerCase());
+  }
+  const re = /[A-Za-zÆØÅæøå-]{9,}/g;
+  window.hy = root => { const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('svg,script,style') ? 2 : 1 }); let n; while ((n = tw.nextNode())) { const t = n.nodeValue.replace(re, w => M.get(w) || w); if (t !== n.nodeValue) n.nodeValue = t; } };
+})();
+
+hy(document.body);
 </script>
 </body>
 </html>
