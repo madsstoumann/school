@@ -46,6 +46,9 @@
     <p>En kop kaffe står på bordet. Den blå graf viser temperaturen. Træk hen ad den og se, hvor hurtigt den køler lige nu.</p>
     <div class="lab">
       <svg id="cof" aria-label="Kaffens temperatur over tid"></svg>
+      <div class="controls">
+        <label class="slider" for="ct">Tid <input id="ct" type="range" min="0" max="30" step="0.1" value="2"></label>
+      </div>
       <div class="readout">
         <b id="cofstate"></b>
         <div class="meter" aria-hidden="true"><i id="cofbar"></i></div>
@@ -121,7 +124,9 @@ function drawCof() {
   document.getElementById('cofstate').textContent = sp > .6 ? 'Rygende varm: den køler hurtigt. Stejl, nedadgående linje.'
     : sp > .2 ? 'Lunken: den køler stadig, men langsommere.' : 'Næsten stuetemperatur: grafen er næsten flad, den køler knap nok.';
 }
-CP.drag(CP.svg, (x) => { tc = clamp(x, 0, 30); drawCof(); });
+const cti = document.getElementById('ct');
+cti.addEventListener('input', () => { tc = +cti.value; drawCof(); });
+CP.drag(CP.svg, (x) => { tc = clamp(x, 0, 30); cti.value = tc; drawCof(); });
 drawCof();
 </script>
 </body>

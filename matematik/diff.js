@@ -71,6 +71,8 @@ class Plot {
     target.addEventListener('pointermove', (e) => { if (on) cb(toX(e)); });
     const off = () => { on = false; };
     target.addEventListener('pointerup', off); target.addEventListener('pointercancel', off);
+    // ældre Safari: stop siden i at rulle, mens man trækker
+    target.addEventListener('touchmove', (e) => { if (on) e.preventDefault(); }, { passive: false });
   }
 }
 
@@ -97,3 +99,29 @@ function initQuiz() {
   });
 }
 document.addEventListener('DOMContentLoaded', initQuiz);
+
+// Touch-venlige skydere: på iPad/iPhone kan man kun flytte en standard-skyder ved at ramme selve knappen.
+// Her flytter et tryk eller træk hvor som helst på skyderen værdien derhen.
+function enhanceRanges() {
+  document.querySelectorAll('input[type="range"]').forEach((r) => {
+    let on = false;
+    const setFrom = (e) => {
+      const b = r.getBoundingClientRect(), thumb = 28;
+      const u = clamp((e.clientX - b.left - thumb / 2) / (b.width - thumb), 0, 1);
+      const min = +r.min || 0, max = r.max === '' ? 100 : +r.max, step = r.step === 'any' ? 0 : +r.step || 1;
+      let v = min + u * (max - min);
+      if (step) v = min + Math.round((v - min) / step) * step;
+      r.value = v;
+      r.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    r.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
+      on = true; r.setPointerCapture?.(e.pointerId); setFrom(e); e.preventDefault();
+    });
+    r.addEventListener('pointermove', (e) => { if (on) { setFrom(e); e.preventDefault(); } });
+    const off = () => { if (on) { on = false; r.dispatchEvent(new Event('change', { bubbles: true })); } };
+    r.addEventListener('pointerup', off); r.addEventListener('pointercancel', off);
+    r.addEventListener('touchmove', (e) => { if (on) e.preventDefault(); }, { passive: false });
+  });
+}
+document.addEventListener('DOMContentLoaded', enhanceRanges);

@@ -40,6 +40,9 @@
       </div>
       <svg id="top" aria-label="Grafen f"></svg>
       <svg id="bot" aria-label="Den afledte f mærke" style="border-top: 2px solid var(--line)"></svg>
+      <div class="controls">
+        <label class="slider" for="mx">Flyt måleren <input id="mx" type="range" min="0" max="6" step="0.02" value="1"></label>
+      </div>
       <div class="readout"><b id="state"></b><p id="sub"></p></div>
     </div>
   </section>
@@ -104,7 +107,7 @@ function build() {
   trail = el('path', { fill: 'none', stroke: 'var(--t)', 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, B.top);
   bar = el('line', { 'stroke-width': 8, 'stroke-linecap': 'round', opacity: .55 }, B.top);
   dotB = el('circle', { r: 9 }, B.top);
-  [T, B].forEach((p) => p.drag(p.svg, (nx) => { x = clamp(nx, 0, 6); draw(); }));
+  [T, B].forEach((p) => p.drag(p.svg, (nx) => { x = clamp(nx, 0, 6); mx.value = x; draw(); }));
   draw();
 }
 function draw() {
@@ -131,9 +134,11 @@ const pick = document.getElementById('pick');
 Object.keys(CURVES).forEach((k) => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = k; b.id = 'c-' + k;
   b.setAttribute('aria-pressed', k === key);
-  b.onclick = () => { key = k; pick.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); build(); };
+  b.onclick = () => { key = k; mx.value = x; pick.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); build(); };
   pick.appendChild(b);
 });
+const mx = document.getElementById('mx');
+mx.addEventListener('input', () => { x = +mx.value; draw(); });
 document.getElementById('all').onclick = () => { seen.fill(true); draw(); };
 build();
 </script>

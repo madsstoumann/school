@@ -68,7 +68,13 @@ section > p { max-width: 65ch; }
 .lab .readout b { font-family: var(--font-display); font-size: 1.25rem; }
 .hint { font-size: .88rem; color: var(--muted); }
 label.slider { display: flex; align-items: center; gap: 10px; flex: 1 1 260px; font-weight: 700; }
-label.slider input { flex: 1; accent-color: var(--t); min-width: 0; }
+label.slider input { flex: 1; min-width: 0; }
+/* store, touch-venlige skydere */
+input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; height: 44px; margin: 0; touch-action: none; cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: var(--line); }
+input[type="range"]::-moz-range-track { height: 10px; border-radius: 5px; background: var(--line); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -9px; border-radius: 50%; background: var(--t); border: 4px solid var(--paper); box-shadow: 0 0 0 2px var(--t); }
+input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--t); border: 4px solid var(--paper); box-shadow: 0 0 0 2px var(--t); }
 button {
   font: inherit; font-weight: 700; border: 1.5px solid var(--f); background: var(--paper); color: var(--fg);
   padding: 7px 14px; border-radius: 10px; cursor: pointer;

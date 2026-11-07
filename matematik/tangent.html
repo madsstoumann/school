@@ -25,6 +25,7 @@
     <div class="lab">
       <svg id="plot" aria-label="Kurve med to punkter og en linje igennem dem"></svg>
       <div class="controls">
+        <label class="slider" for="px">Flyt punktet <input id="px" type="range" min="-0.5" max="5.5" step="0.02" value="2.5"></label>
         <label class="slider" for="h">Langt fra hinanden <input id="h" type="range" min="0" max="100" step="1" value="10"> Tæt på</label>
       </div>
       <div class="readout">
@@ -109,8 +110,10 @@ function draw() {
     : 'Tættere på. Se hvordan sekantens søjle nærmer sig tangentens.';
 }
 inp.addEventListener('input', draw);
-P.drag(hit, (x) => { x0 = clamp(x, -0.5, 5.5); draw(); });
-P.drag(p, (x) => { x0 = clamp(x, -0.5, 5.5); draw(); });
+const px = document.getElementById('px');
+px.addEventListener('input', () => { x0 = +px.value; draw(); });
+P.drag(hit, (x) => { x0 = clamp(x, -0.5, 5.5); px.value = x0; draw(); });
+P.drag(p, (x) => { x0 = clamp(x, -0.5, 5.5); px.value = x0; draw(); });
 draw();
 
 // lup
