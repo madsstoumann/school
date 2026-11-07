@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Den store idé</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 1 af 7</div>
+    <h1>Den store idé: hvor stejlt lige nu?</h1>
+    <p class="lede">En graf viser, <span class="cf">hvor langt</span> du er nået. Differentialregning viser, <span class="ct">hvor hurtigt</span> det går, lige i det øjeblik. Og hurtigt betyder på en graf bare én ting: <span class="ct">stejlt</span>.</p>
+  </header>
+
+  <section>
+    <h2>En cykeltur i to billeder</h2>
+    <p>Du cykler hjemmefra, suser ned ad en bakke, holder pause ved iskiosken og kæmper dig op ad den næste bakke. Træk i skyderen og se, hvad grafen og speedometeret siger.</p>
+    <div class="lab">
+      <svg id="road" aria-label="Vejen med cyklen"></svg>
+      <svg id="plot" aria-label="Graf over hvor langt du er kommet"></svg>
+      <div class="controls">
+        <label class="slider" for="t">Tid <input id="t" type="range" min="0" max="10" step="0.02" value="3"></label>
+        <button id="play" type="button">▶ Afspil turen</button>
+      </div>
+      <div class="readout" style="grid-template-columns: auto 1fr; align-items: center; gap: 16px;">
+        <svg id="gauge" viewBox="0 0 200 118" style="width: 150px" aria-label="Speedometer"></svg>
+        <div><b id="phase"></b><p id="phasetxt"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Samme tur, to måleinstrumenter</h2>
+    <div class="cards">
+      <div class="pcard f">
+        <svg viewBox="0 0 200 90"><path d="M10 80 C60 78 70 30 110 26 S160 24 190 10" class="g-f"/></svg>
+        <h3>Kilometertælleren = grafen</h3>
+        <p>Den <span class="cf">blå linje</span> tæller, hvor langt du er nået. Den kan kun stige eller stå stille.</p>
+      </div>
+      <div class="pcard t">
+        <svg viewBox="0 0 200 90"><path d="M30 80 A70 70 0 0 1 170 80" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/><line x1="100" y1="80" x2="150" y2="35" class="g-t"/><circle cx="100" cy="80" r="7" fill="var(--t)"/></svg>
+        <h3>Speedometeret = hældningen</h3>
+        <p>Den <span class="ct">orange linje</span> lægger sig langs grafen og viser, hvor stejl den er lige her. Det er differentialregning.</p>
+      </div>
+    </div>
+    <div class="remember">
+      <div class="eyebrow">Husk billedet</div>
+      <p>Grafen er <span class="cf">vejen</span>. Differentialregning er <span class="ct">hvor stejl vejen er der, hvor du står</span>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Hvorfor er det smart?</h2>
+    <div class="cards">
+      <div class="pcard"><h3>Fart</h3><p>Speedometeret i en bil er differentialregning på hjul.</p></div>
+      <div class="pcard"><h3>Toppe</h3><p>Hvor er bjerget højest? Der hvor vejen holder op med at stige.</p></div>
+      <div class="pcard"><h3>Vækst</h3><p>Vokser noget hurtigere eller langsommere end i går?</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Prøv dig selv</h2>
+    <div class="quiz" data-quiz='[
+      {"q":"Hvor på turen er den blå graf helt flad?","o":["Ned ad bakken","Ved iskiosken","Op ad bakken"],"a":1,"why":"Når du holder stille, kommer du ingen vegne. Grafen står vandret, og speedometeret viser nul."},
+      {"q":"Hvor er grafen stejlest?","o":["Ned ad bakken","Ved iskiosken","Op ad bakken"],"a":0,"why":"Du suser afsted og når langt på kort tid. Stejl graf betyder høj fart."}
+    ]'></div>
+  </section>
+
+  <nav class="nextnav"><a href="index.html">← Alle emner</a><a href="haeldning.html">Næste: Hældning →</a></nav>
+</div>
+
+<script>
+// fart over tid: i gang, ned ad bakke, pause, op ad bakke
+const S = (t, a, b) => { const u = clamp((t - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+const v = (t) => 2 * S(t, 0, .5) + 2.5 * S(t, 1.8, 2.3) - 4.5 * S(t, 3.8, 4.2) + 1.2 * S(t, 5.8, 6.3);
+const N = 1000, cum = [0];
+for (let i = 1; i <= N; i++) { const a = (i - 1) / N * 10, b = i / N * 10; cum.push(cum[i - 1] + (v(a) + v(b)) / 2 * (b - a)); }
+const s = (t) => { const p = clamp(t, 0, 10) / 10 * N, i = Math.floor(p), r = p - i; return i >= N ? cum[N] : cum[i] * (1 - r) + cum[i + 1] * r; };
+const SMAX = cum[N];
+
+const P = new Plot(document.getElementById('plot'), { w: 700, h: 340, x0: 0, x1: 10, y0: 0, y1: Math.ceil(SMAX) + 1, xlabel: 'tid →', ylabel: '↑ hvor langt' });
+P.curve(s);
+const tan = el('line', { class: 'g-t' }, P.top);
+const dot = el('circle', { r: 9, class: 'g-dot' }, P.top);
+
+// vejen
+const road = document.getElementById('road'); road.setAttribute('viewBox', '0 0 700 80');
+const rx = (d) => 30 + d / SMAX * 640;
+el('line', { x1: 30, x2: 670, y1: 60, y2: 60, stroke: 'var(--grid-strong)', 'stroke-width': 6, 'stroke-linecap': 'round' }, road);
+el('text', { x: 30, y: 22, class: 'g-tag', fill: 'var(--muted)', text: 'Hjem' }, road);
+const kx = rx(s(5));
+el('rect', { x: kx - 14, y: 26, width: 28, height: 28, rx: 5, fill: 'var(--flat-soft)', stroke: 'var(--flat)', 'stroke-width': 2 }, road);
+el('text', { x: kx, y: 45, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--flat)', text: 'Is' }, road);
+el('text', { x: (30 + kx) / 2 + 40, y: 22, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--muted)', text: '↘ bakke ned' }, road);
+el('text', { x: (kx + 670) / 2, y: 22, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--muted)', text: '↗ bakke op' }, road);
+const bike = el('g', {}, road);
+el('circle', { cx: -10, cy: 50, r: 8, fill: 'none', stroke: 'var(--f)', 'stroke-width': 3 }, bike);
+el('circle', { cx: 10, cy: 50, r: 8, fill: 'none', stroke: 'var(--f)', 'stroke-width': 3 }, bike);
+el('path', { d: 'M-10 50 L-2 38 L10 50 M-2 38 L6 38 M-4 34 L0 34', stroke: 'var(--f)', 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' }, bike);
+
+// speedometer
+const g = document.getElementById('gauge');
+el('path', { d: 'M20 100 A80 80 0 0 1 180 100', fill: 'none', stroke: 'var(--line)', 'stroke-width': 14, 'stroke-linecap': 'round' }, g);
+const arc = el('path', { fill: 'none', stroke: 'var(--t)', 'stroke-width': 14, 'stroke-linecap': 'round' }, g);
+const needle = el('line', { x1: 100, y1: 100, class: 'g-t', 'stroke-width': 5 }, g);
+el('circle', { cx: 100, cy: 100, r: 8, fill: 'var(--t)' }, g);
+el('text', { x: 20, y: 117, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--muted)', text: 'stille' }, g);
+el('text', { x: 180, y: 117, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--muted)', text: 'hurtigt' }, g);
+
+const inp = document.getElementById('t');
+function draw() {
+  const t = +inp.value, y = s(t), m = v(t);
+  P.place(dot, t, y); P.lineAt(tan, t, y, m, 1.4);
+  bike.setAttribute('transform', `translate(${rx(y)} 0)`);
+  const ang = Math.PI * (1 - clamp(m / 5, 0, 1));
+  const nx = 100 + 66 * Math.cos(ang), ny = 100 - 66 * Math.sin(ang);
+  needle.setAttribute('x2', nx); needle.setAttribute('y2', ny);
+  const ex = 100 + 80 * Math.cos(ang), ey = 100 - 80 * Math.sin(ang);
+  arc.setAttribute('d', m < .05 ? '' : `M20 100 A80 80 0 0 1 ${ex.toFixed(1)} ${ey.toFixed(1)}`);
+  const [h, txt] = m < .15 ? ['Stille', 'Du holder pause. Grafen er helt vandret, og den orange linje ligger fladt.']
+    : m > 3.5 ? ['Susende hurtigt!', 'Ned ad bakken når du langt på kort tid. Grafen er stejl, og den orange linje peger skarpt op.']
+    : m > 1.6 ? ['Rask tempo', 'Grafen stiger pænt. Den orange linje hælder tydeligt.']
+    : ['Langsomt', 'Du kommer fremad, men grafen hælder kun lidt. Den orange linje er næsten flad.'];
+  document.getElementById('phase').textContent = h;
+  document.getElementById('phasetxt').textContent = txt;
+}
+inp.addEventListener('input', draw);
+P.drag(P.svg, (x) => { inp.value = clamp(x, 0, 10); draw(); });
+let raf = null;
+document.getElementById('play').onclick = () => {
+  if (raf) { cancelAnimationFrame(raf); raf = null; return; }
+  if (+inp.value >= 9.9) inp.value = 0;
+  const step = () => { inp.value = +inp.value + .03; draw(); raf = +inp.value < 10 ? requestAnimationFrame(step) : null; };
+  raf = requestAnimationFrame(step);
+};
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hældning</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 2 af 7</div>
+    <h1>Hældning: skridt hen, skridt op</h1>
+    <p class="lede">Før vi kan måle stejlhed på kurver, starter vi med noget lige: en rampe, et tag, en skibakke. Hældning er bare svaret på ét spørgsmål.</p>
+  </header>
+
+  <div class="remember">
+    <div class="eyebrow">Det ene spørgsmål</div>
+    <p>Når jeg går <b>ét skridt hen</b>, hvor meget kommer jeg så <span class="ct">op</span> (eller <span class="cd">ned</span>)?</p>
+  </div>
+
+  <section>
+    <h2>Byg din egen bakke</h2>
+    <p>Træk i skyderen. Den stiplede pil er ét skridt hen. Den farvede pil er, hvor meget du kommer op eller ned.</p>
+    <div class="lab">
+      <svg id="plot" aria-label="En ret linje med en trappe"></svg>
+      <div class="controls">
+        <label class="slider" for="m">Stejlhed <input id="m" type="range" min="-3" max="3" step="0.25" value="1"></label>
+      </div>
+      <div class="readout">
+        <b id="badge"></b>
+        <p id="say"></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Tre slags hældning</h2>
+    <div class="cards">
+      <div class="pcard up">
+        <svg viewBox="0 0 200 100"><line x1="20" y1="85" x2="180" y2="15" stroke="var(--up)" stroke-width="5" stroke-linecap="round"/><path d="M60 68 h40 v-18" fill="none" stroke="var(--up)" stroke-width="2.5" stroke-dasharray="5 4"/></svg>
+        <h3>Plus: op ad bakke</h3>
+        <p>Linjen stiger, når du læser fra venstre mod højre. Jo større tal, jo stejlere.</p>
+      </div>
+      <div class="pcard flat">
+        <svg viewBox="0 0 200 100"><line x1="20" y1="50" x2="180" y2="50" stroke="var(--flat)" stroke-width="5" stroke-linecap="round"/></svg>
+        <h3>Nul: helt fladt</h3>
+        <p>Som et gulv. Du går og går, men kommer hverken op eller ned.</p>
+      </div>
+      <div class="pcard down">
+        <svg viewBox="0 0 200 100"><line x1="20" y1="15" x2="180" y2="85" stroke="var(--down)" stroke-width="5" stroke-linecap="round"/><path d="M60 32 h40 v18" fill="none" stroke="var(--down)" stroke-width="2.5" stroke-dasharray="5 4"/></svg>
+        <h3>Minus: ned ad bakke</h3>
+        <p>Linjen falder fra venstre mod højre. Minus betyder bare "nedad".</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Du har set det før</h2>
+    <div class="cards">
+      <div class="pcard">
+        <svg viewBox="0 0 200 110"><path d="M100 10 L190 100 H10 Z" fill="var(--paper)" stroke="var(--down)" stroke-width="8" stroke-linejoin="round"/><path d="M50 85 L150 70" stroke="var(--fg)" stroke-width="6" stroke-linecap="round"/><text x="100" y="62" text-anchor="middle" style="font-family: var(--font-display); font-weight: 800; font-size: 22px">10%</text></svg>
+        <h3>Vejskiltet "10 %"</h3>
+        <p>Vejen stiger 1 meter for hver 10 meter, du kører frem. Det er hældning på et skilt.</p>
+      </div>
+      <div class="pcard">
+        <svg viewBox="0 0 200 110"><path d="M20 100 L100 30 L180 100" fill="none" stroke="var(--f)" stroke-width="6" stroke-linejoin="round"/><rect x="60" y="70" width="80" height="30" fill="var(--f-soft)" stroke="var(--f)" stroke-width="3"/></svg>
+        <h3>Taget på et hus</h3>
+        <p>Den ene side har <span class="cu">plus</span>-hældning, den anden har <span class="cd">minus</span>. Toppen er mødestedet.</p>
+      </div>
+      <div class="pcard">
+        <svg viewBox="0 0 200 110"><path d="M10 100 H190" stroke="var(--grid-strong)" stroke-width="4"/><path d="M30 100 L170 60" stroke="var(--up)" stroke-width="7" stroke-linecap="round"/><circle cx="100" cy="66" r="10" fill="none" stroke="var(--f)" stroke-width="3"/></svg>
+        <h3>Kørestolsrampen</h3>
+        <p>Må ikke være for stejl. Lille hældning betyder let at køre op.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Prøv dig selv</h2>
+    <div class="quiz" data-quiz='[
+      {"q":"En linje går ned fra venstre mod højre. Hvilken hældning har den?","o":["Plus","Nul","Minus"],"a":2,"why":"Nedad betyder minus. Farvekoden er rød."},
+      {"q":"Hvilken er stejlest: 1 skridt hen og 3 op, eller 1 hen og 1 op?","o":["3 op","1 op","Lige stejle"],"a":0,"why":"Flere skridt op for hvert skridt hen betyder en stejlere bakke."}
+    ]'></div>
+  </section>
+
+  <nav class="nextnav"><a href="ide.html">← Den store idé</a><a href="tangent.html">Næste: Fra to punkter til ét →</a></nav>
+</div>
+
+<script>
+const P = new Plot(document.getElementById('plot'), { w: 700, h: 400, x0: -5, x1: 5, y0: -5, y1: 5 });
+const lineEl = el('line', { 'stroke-width': 5, 'stroke-linecap': 'round' }, P.top);
+const run = el('line', { class: 'g-step-run' }, P.top);
+const rise = el('line', { class: 'g-step-rise' }, P.top);
+const runT = el('text', { class: 'g-tag', fill: 'var(--muted)', 'text-anchor': 'middle', text: '1 skridt hen' }, P.top);
+const riseT = el('text', { class: 'g-tag' }, P.top);
+const dotA = el('circle', { r: 7, class: 'g-dot-f' }, P.top);
+const inp = document.getElementById('m');
+function draw() {
+  const m = +inp.value, col = signColor(m);
+  const b = 0, xa = -1;
+  P.lineAt(lineEl, 0, b, m, 6); lineEl.setAttribute('stroke', col);
+  const ya = b + m * xa;
+  P.place(dotA, xa, ya);
+  run.setAttribute('x1', P.sx(xa)); run.setAttribute('y1', P.sy(ya)); run.setAttribute('x2', P.sx(xa + 2)); run.setAttribute('y2', P.sy(ya));
+  rise.setAttribute('x1', P.sx(xa + 2)); rise.setAttribute('y1', P.sy(ya)); rise.setAttribute('x2', P.sx(xa + 2)); rise.setAttribute('y2', P.sy(ya + 2 * m)); rise.setAttribute('stroke', col);
+  runT.setAttribute('x', P.sx(xa + 1)); runT.setAttribute('y', P.sy(ya) + (m >= 0 ? 20 : -10));
+  riseT.setAttribute('x', P.sx(xa + 2) + 10); riseT.setAttribute('y', P.sy(ya + m)); riseT.setAttribute('fill', col);
+  const a = Math.abs(m);
+  riseT.textContent = a < .01 ? '' : `${fmt(a, 2)} ${m > 0 ? 'op' : 'ned'}`;
+  // trinnet tegnes på 2 skridt (så det kan ses), men læses pr. 1 skridt
+  runT.textContent = '1 skridt hen';
+  run.setAttribute('x2', P.sx(xa + 1)); rise.setAttribute('x1', P.sx(xa + 1)); rise.setAttribute('x2', P.sx(xa + 1)); rise.setAttribute('y2', P.sy(ya + m));
+  runT.setAttribute('x', P.sx(xa + .5)); riseT.setAttribute('x', P.sx(xa + 1) + 10); riseT.setAttribute('y', P.sy(ya + m / 2) + 5);
+  const piste = a < .01 ? 'Helt fladt som et gulv' : a <= .5 ? 'Grøn piste: let' : a <= 1 ? 'Blå piste: mellem' : a <= 2 ? 'Rød piste: stejl' : 'Sort piste: vildt stejl!';
+  document.getElementById('badge').innerHTML = `<span class="${signText(m)}">Hældning ${m > 0 ? '+' : ''}${fmt(m, 2)}</span> · ${piste}`;
+  document.getElementById('say').textContent = a < .01 ? 'Ét skridt hen, og du er stadig i samme højde. Hældningen er nul.'
+    : `Ét skridt hen, og du kommer ${fmt(a, 2)} ${m > 0 ? 'op' : 'ned'}. ${m > 0 ? 'Plus betyder opad.' : 'Minus betyder nedad.'}`;
+}
+inp.addEventListener('input', draw);
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kvælstofnedfald</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: kort over de fire bidder øverst, derefter én stor tegning, der bygges op trin for trin, og en fortæller-boks under den. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --accent: #3d7f2e; --accent-soft: #e3f0dc;
+  --leaf: #4f9a3a; --leaf-soft: #cfe6c4; --sun: #e0a100; --sun-soft: #fbedc4;
+  --water: #2f7fc1; --water-soft: #d6e8f6; --hplus: #d0582a; --electron: #7b4bc4;
+  --carbon: #26302b; --air: #c2412f; --membrane: #b9d3a8; --stroma: #eef6e7; --lumen: #fbeee4;
+  --node: #ffffff; --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --accent: #8fd67a; --accent-soft: #1e2f1a;
+    --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+    --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+    --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --accent: #8fd67a; --accent-soft: #1e2f1a;
+  --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+  --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+  --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; } h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+
+/* Kort over bidderne */
+.map { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.map a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); text-decoration: none; font-size: .9rem; min-width: 0; }
+.map a b { font-family: var(--font-display); color: var(--fg); font-size: 1rem; }
+.map a.here { border-color: var(--accent); background: var(--accent-soft); }
+.map a.here b { color: var(--accent); }
+.map a:hover { border-color: var(--accent); }
+@media (max-width: 620px) { .map { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.fact { border-left: 4px solid var(--accent); padding-left: 14px; display: grid; gap: 6px; }
+.fact .v { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--accent); }
+.fact .src { font-size: .8rem; color: var(--muted); }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 8em 1fr; gap: 10px; align-items: center; font-size: .9rem; }
+.bar .track { height: 14px; border-radius: 7px; background: var(--accent-soft); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; background: var(--accent); }
+
+/* Tegning */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: var(--font-body); fill: var(--fg); font-size: 14px; }
+svg .t { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 700; }
+[data-s] { transition: opacity .3s; }
+.dim [data-s]:not(.on) { opacity: .22; }
+.on .glow, .on.glow { filter: drop-shadow(0 0 6px var(--sun)); }
+.flow { stroke-dasharray: 8 7; }
+.on .flow, .on.flow { animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -30; } }
+.spin { transform-box: fill-box; transform-origin: center; }
+.on .spin { animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hint { font-size: .88rem; color: var(--muted); padding: 10px 18px 0; }
+.story { display: grid; gap: 12px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); margin-top: 12px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story p { max-width: 70ch; }
+.story .img { font-style: italic; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 1.5px solid var(--accent); background: var(--surface); }
+.dots button.on { background: var(--accent); }
+
+.section { display: grid; gap: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; color: var(--accent); }
+.steps .img { font-size: .92rem; color: var(--muted); font-style: italic; }
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 24px; }
+.words div { display: grid; gap: 2px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.words b { font-family: var(--font-display); }
+.words span { color: var(--muted); font-size: .95rem; }
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.q button.wrong { background: var(--hplus); border-color: var(--hplus); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <nav class="map" id="map" aria-label="Emner i serien"></nav>
+
+  <section class="card" aria-label="Tegning">
+    <p class="hint">Tryk Næste for at bygge tegningen op, eller tryk direkte på noget i tegningen.</p>
+    <div class="scroll"><svg viewBox="0 0 820 560" role="img" aria-label="Kvælstof fra fabrikker, trafik og landbrug falder ned over skoven og ændrer den"><defs>
+<marker id="m-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+<marker id="m-sun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--sun)"/></marker>
+<marker id="m-water" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--water)"/></marker>
+<marker id="m-leaf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--leaf)"/></marker>
+<marker id="m-air" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--air)"/></marker>
+<marker id="m-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--electron)"/></marker>
+<marker id="m-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--hplus)"/></marker>
+<marker id="m-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+<marker id="m-fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fg)"/></marker>
+</defs>
+<path d="M20,260 L800,260" style="stroke:var(--node-line);stroke-width:3"/>
+<g data-s="0,2"><rect x="40" y="210" width="60" height="50" style="fill:var(--muted)"/><rect x="50" y="160" width="12" height="50" style="fill:var(--muted)"/><rect x="74" y="170" width="12" height="40" style="fill:var(--muted)"/><circle cx="56" cy="145" r="12" style="fill:var(--node-line)"/><circle cx="70" cy="125" r="16" style="fill:var(--node-line)"/><text x="70" y="285" text-anchor="middle" class="small b">fabrikker og biler</text><rect x="90.0" y="45.0" width="120" height="30" rx="15.0" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="150" y="65" text-anchor="middle" class="small b">NOₓ</text></g>
+<g data-s="1,2"><rect x="236" y="226" width="48" height="24" rx="8" style="fill:var(--fg)"/><circle cx="288" cy="230" r="9" style="fill:var(--fg)"/><path d="M242,250 L242,260 M276,250 L276,260" style="stroke:var(--fg);stroke-width:4"/><circle cx="254" cy="236" r="5" style="fill:var(--surface)"/><rect x="306" y="226" width="48" height="24" rx="8" style="fill:var(--fg)"/><circle cx="358" cy="230" r="9" style="fill:var(--fg)"/><path d="M312,250 L312,260 M346,250 L346,260" style="stroke:var(--fg);stroke-width:4"/><circle cx="324" cy="236" r="5" style="fill:var(--surface)"/><text x="295" y="285" text-anchor="middle" class="small b">landbrug</text><rect x="250.0" y="125.0" width="120" height="30" rx="15.0" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="310" y="145" text-anchor="middle" class="small b">ammoniak</text></g>
+<g data-s="2"><path d="M210,60 C400,40 520,60 620,140" style="fill:none;stroke:var(--hplus);stroke-width:3.5" class="flow" marker-end="url(#m-h)"/><text x="420" y="40" text-anchor="middle" class="small b" style="fill:var(--hplus)">bliver til nitrat</text>
+<path d="M370,140 C450,140 530,170 610,200" style="fill:none;stroke:var(--sun);stroke-width:3.5" class="flow" marker-end="url(#m-sun)"/><text x="470" y="135" text-anchor="middle" class="small b" style="fill:var(--sun)">bliver til ammonium</text></g>
+<g data-s="3">
+<path d="M640,60 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M654,68 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M668,76 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M682,60 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M696,68 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M710,76 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M724,60 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M738,68 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M752,76 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<path d="M766,60 l-8,22" style="stroke:var(--water);stroke-width:2"/>
+<text x="700" y="50" text-anchor="middle" class="small b" style="fill:var(--water)">med regnen</text><text x="560" y="230" text-anchor="middle" class="small b" style="fill:var(--muted)">og som støv</text></g>
+<g data-s="0,1,2,3,4"><rect x="635.8" y="237.6" width="8.4" height="22.4" style="fill:var(--muted)"/><circle cx="640" cy="218.0" r="23.8" style="fill:var(--leaf);opacity:1"/><rect x="694.6" y="231.2" width="10.8" height="28.8" style="fill:var(--muted)"/><path d="M700,159.2 L728.8,238.4 L671.2,238.4 Z" style="fill:var(--leaf);opacity:1"/><rect x="755.8" y="237.6" width="8.4" height="22.4" style="fill:var(--muted)"/><circle cx="760" cy="218.0" r="23.8" style="fill:var(--leaf);opacity:1"/></g>
+<g data-s="4"><text x="410" y="330" text-anchor="middle" class="t">Først: gødning</text>
+<text x="410" y="355" text-anchor="middle" class="small">træerne vokser mere</text></g>
+<g data-s="5"><text x="410" y="395" text-anchor="middle" class="t">Så: for meget</text>
+<rect x="20" y="410" width="180" height="60" rx="12" style="fill:var(--surface);stroke:var(--hplus);stroke-width:2"/><text x="110" y="435" text-anchor="middle" class="small b">fosfor bliver det,</text><text x="110" y="453" text-anchor="middle" class="small b">der mangler</text>
+<rect x="220" y="410" width="180" height="60" rx="12" style="fill:var(--surface);stroke:var(--hplus);stroke-width:2"/><text x="310" y="435" text-anchor="middle" class="small b">arter, der elsker</text><text x="310" y="453" text-anchor="middle" class="small b">kvælstof, vinder</text>
+<rect x="420" y="410" width="180" height="60" rx="12" style="fill:var(--surface);stroke:var(--hplus);stroke-width:2"/><text x="510" y="435" text-anchor="middle" class="small b">mindre</text><text x="510" y="453" text-anchor="middle" class="small b">mykorrhiza</text>
+<rect x="620" y="410" width="180" height="60" rx="12" style="fill:var(--surface);stroke:var(--hplus);stroke-width:2"/><text x="710" y="435" text-anchor="middle" class="small b">mere sårbar</text><text x="710" y="453" text-anchor="middle" class="small b">for stress</text>
+</g>
+<g data-s="6"><text x="30" y="510" text-anchor="start" class="b">Udledningen falder</text>
+<rect x="250" y="505.0" width="26" height="40.0" rx="4" style="fill:var(--accent)"/>
+<rect x="286" y="507.8" width="26" height="37.2" rx="4" style="fill:var(--accent)"/>
+<rect x="322" y="510.6" width="26" height="34.4" rx="4" style="fill:var(--accent)"/>
+<rect x="358" y="513.4" width="26" height="31.6" rx="4" style="fill:var(--accent)"/>
+<rect x="394" y="516.2" width="26" height="28.8" rx="4" style="fill:var(--accent)"/>
+<rect x="430" y="519.0" width="26" height="26.0" rx="4" style="fill:var(--accent)"/>
+<rect x="466" y="521.8" width="26" height="23.2" rx="4" style="fill:var(--accent)"/>
+<text x="250" y="556" text-anchor="start" class="small">1993</text><text x="500" y="556" text-anchor="end" class="small">2006</text><text x="530" y="535" text-anchor="start" class="small b" style="fill:var(--accent)">lidt mindre for hvert år</text></g>
+</svg></div>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div><div class="count" id="count"></div><h3 id="st-title"></h3></div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="img" id="st-img"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Alle trin på én gang</h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section" id="facts-sec">
+    <h2>Set i bogen</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="section">
+    <h2>Ord, du møder</h2>
+    <div class="words" id="words"></div>
+  </section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+<script>
+const D = {"title": "Kvælstofnedfald", "lede": "Skoven får gødning fra luften, om den vil eller ej. Kvælstof fra skorstene, biler og landbrug falder ned med regnen og som støv. Lidt er godt. For meget ændrer hele skoven.", "story": [{"title": "Fra skorstene og biler", "text": "Når der brændes noget af, dannes kvælstofilter (NOₓ). I luften bliver de til salpetersyre og nitrat.", "img": "Den røde sti."}, {"title": "Fra landbruget", "text": "Gylle og gødning giver ammoniak, som i luften bliver til ammonium.", "img": "Den gule sti."}, {"title": "Ned over skoven", "text": "Begge dele bliver båret med vinden og lander i skoven. Det kaldes deposition.", "img": "Kvælstof på rejse."}, {"title": "Vådt og tørt", "text": "Noget falder ned med regnen (våddeposition). Resten lægger sig som partikler og gas direkte på blade og jord (tørdeposition).", "img": "Regn og støv."}, {"title": "Først: gødning", "text": "Kvælstof er ofte det, planterne mangler. Så først vokser skoven mere.", "img": "Ekstra mad."}, {"title": "Så: for meget", "text": "Bliver det ved, er der pludselig mangel på fosfor i stedet. Arter, der elsker kvælstof, fx græsser og brændenælder, vinder over andre. Svampene ved rødderne (mykorrhiza) går tilbage, og træerne bliver mere sårbare for tørke og angreb.", "img": "Gødning bliver til forurening."}, {"title": "Det går den rigtige vej", "text": "Udledningen af kvælstof fra Danmark og EU og nedfaldet over Danmark er faldet støt siden 1990erne.", "img": "Søjlerne bliver lavere."}], "words": [["Deposition", "Når stoffer fra luften lander på jord og planter."], ["Mykorrhiza", "Svampe, der lever sammen med træernes rødder."], ["Ammoniak", "Kvælstofgas fra landbruget."]], "remember": ["<b>To kilder:</b> forbrænding og landbrug.", "<b>Vådt og tørt</b> nedfald.", "<b>Lidt er gødning, meget er forurening.</b>", "Se også <a href=\"kvaelstof.html\">Kvælstoffets kredsløb</a>."], "quiz": [{"q": "Hvor kommer ammoniak fra?", "o": ["Landbruget", "Biler", "Havet"], "a": 0, "why": "Gylle og gødning giver ammoniak."}, {"q": "Hvad sker der, når der kommer for meget kvælstof?", "o": ["Kvælstofelskende arter vinder over andre", "Alle arter får det bedre", "Ingenting"], "a": 0, "why": "Artssammensætningen ændrer sig."}], "note": "Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 210 (tilførsel fra atmosfæren), 211 (deposition i regioner), 212 (effekter) og 213 (udvikling 1993-2006, her forenklet til søjler). Eksemplerne græsser og brændenælder er almen viden.", "no": 4, "series": {"name": "Skovene", "items": [["skov-gennem-tiden.html", "Skoven gennem tiden", "Fældet og plantet igen"], ["succession.html", "Succession", "Fra bar jord til skov"], ["skovens-sundhed.html", "Skovens sundhed", "Når kronen bliver tynd"], ["kvaelstofnedfald.html", "Kvælstofnedfald", "Gødning fra luften"]]}, "facts": []};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title; $('lede').innerHTML = D.lede;
+const MAP = D.series.items;
+$('eyebrow').textContent = `${D.series.name} · ${D.no} af ${MAP.length}`;
+$('map').innerHTML = MAP.map(([f, t, s], i) => `<a href="${f}" class="${i + 1 === D.no ? 'here' : ''}"${i + 1 === D.no ? ' aria-current="page"' : ''}><b>${i + 1}. ${t}</b>${s}</a>`).join('');
+const svg = document.querySelector('.scroll svg');
+const story = D.story; let cur = 0;
+$('dots').innerHTML = story.map((s, i) => `<button type="button" aria-label="Trin ${i + 1}" data-i="${i}"></button>`).join('');
+$('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$('steps').innerHTML = story.map((s, i) => `<li data-i="${i}"><div class="n">Trin ${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.img ? `<p class="img">${s.img}</p>` : ''}</li>`).join('');
+document.querySelectorAll('#steps li').forEach(li => li.onclick = () => { go(+li.dataset.i); svg.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+svg.querySelectorAll('[data-s]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => { const s = el.dataset.s.split(',').map(Number); go(s.includes(cur) ? s[(s.indexOf(cur) + 1) % s.length] : s[0]); });
+});
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur + 1} af ${story.length}`;
+  $('st-title').innerHTML = s.title; $('st-text').innerHTML = s.text; $('st-img').innerHTML = s.img || '';
+  svg.classList.add('dim');
+  svg.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('on', el.dataset.s.split(',').map(Number).includes(cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+  $('dots').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1); $('next').onclick = () => go(cur + 1);
+go(0);
+$('words').innerHTML = D.words.map(([w, d]) => `<div><b>${w}</b><span>${d}</span></div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi + 1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.onclick = () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a; b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  });
+});
+$('note').innerHTML = D.note;
+if (D.facts && D.facts.length) {
+  $('facts').innerHTML = D.facts.map(f => {
+    let vis = '';
+    if (f.bars) { const max = Math.max(...f.bars.map(b => b.v)); vis = `<div class="bars">${f.bars.map(b => `<div class="bar"><span>${b.l}</span><div class="track" role="img" aria-label="${b.l}"><div class="fill" style="width:${Math.max(1, b.v / max * 100)}%"></div></div></div>`).join('')}</div>`; }
+    return `<div class="fact"><div class="v">${f.v}</div><p>${f.d}</p>${vis}<div class="src">${f.src}</div></div>`;
+  }).join('');
+} else $('facts-sec').hidden = true;
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biologi i billeder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: et roligt bibliotek. Kapitler som rækker, hvert emne som et kort med sit eget lille kredsløbsikon og sin egen farve. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --n: #3557b7; --c: #2f6f4a; --p: #b8651a; --brand: #2f6f4a;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32; --n: #8fa9ff; --c: #7fd3a0; --p: #f2a964; --brand: #7fd3a0; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32; --n: #8fa9ff; --c: #7fd3a0; --p: #f2a964; --brand: #7fd3a0; color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+.wrap { max-width: 1000px; margin: 0 auto; display: grid; gap: 48px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.1; text-wrap: balance; }
+h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; }
+p { margin: 0; }
+header { display: grid; gap: 12px; }
+.lede { font-size: 1.2rem; max-width: 56ch; color: var(--muted); }
+#chapters { display: grid; gap: 56px; }
+.chapter { display: grid; gap: 16px; }
+.chapter .ch { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+a.card {
+  --a: var(--brand);
+  display: grid; grid-template-rows: auto auto 1fr; gap: 10px; padding: 20px; border-radius: 18px;
+  background: var(--surface); border: 1.5px solid var(--line); color: inherit; text-decoration: none;
+  transition: transform .15s, border-color .15s;
+}
+a.card:hover { transform: translateY(-3px); border-color: var(--a); }
+a.card:focus-visible { outline: 3px solid var(--a); outline-offset: 3px; }
+a.card h3 { font-size: 1.35rem; color: var(--a); }
+a.card p { color: var(--muted); }
+a.card svg { width: 64px; height: 64px; }
+a.card svg circle { fill: none; stroke: var(--a); stroke-width: 4; stroke-dasharray: 34 10; }
+a.card svg path { fill: var(--a); }
+a.card svg text { fill: var(--a); font-family: var(--font-display); font-weight: 800; font-size: 20px; }
+.how { font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { a.card { transition: none; } }
+</style>
+
+<style>.back { color: var(--brand); font-weight: 700; text-decoration: none; justify-self: start; } .back:hover { text-decoration: underline; }</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="../">← Forside</a>
+    <h1>Biologi i billeder</h1>
+    <p class="lede">Tegninger, du kan trykke på. Vælg et emne og følg det rundt.</p>
+  </header>
+  <div id="chapters"></div>
+  <p class="how">Bygget på figurerne fra lærebogen <i>Biologi i fokus</i>. Nye emner kommer til her.</p>
+</div>
+
+<script>
+// Tilføj nye emner her: { no, chapter, file, title, text, symbol, color }
+const TOPICS = [
+  { no: 9, chapter: 'Naturen i grundtræk', file: 'kulstof.html', title: 'Kulstoffets kredsløb', text: 'Fotosyntese trækker CO₂ ind. Alle, der ånder, sender det ud igen.', symbol: 'C', color: '--c' },
+  { no: 9, chapter: 'Naturen i grundtræk', file: 'kvaelstof.html', title: 'Kvælstoffets kredsløb', text: 'Luften er fuld af kvælstof, men kun bakterier har nøglen.', symbol: 'N', color: '--n' },
+  { no: 9, chapter: 'Naturen i grundtræk', file: 'fosfor.html', title: 'Fosforkredsløbet', text: 'Ingen vej gennem luften. Fosfor rejser med vand, jord og sten.', symbol: 'P', color: '--p' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'okosystemet.html', title: '1. Økosystemet', text: 'Det levende og det ikke-levende spiller sammen.', symbol: '1', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'hvem-laver-maden.html', title: '2. Hvem laver maden?', text: 'Autotrof, fotoautotrof, kemoautotrof og heterotrof.', symbol: '2', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'plantens-opbygning.html', title: '3. Plantens opbygning', text: 'Rod, stængel, blad og blomst. Og bladets indre.', symbol: '3', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'sikar-og-vedkar.html', title: '4. Sikar og vedkar', text: 'V-V og S-S: plantens rørsystem.', symbol: '4', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'blomst-og-fro.html', title: '5. Blomst og frø', text: 'Fra pollen til frø, og hvordan frø rejser.', symbol: '5', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'naering-fra-jorden.html', title: '6. Næring fra jorden', text: 'Byttehandel med ler, svampe og nedbrydere.', symbol: '6', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'fodekaeder.html', title: '7. Fødekæder', text: 'Græsning, nedbrydning og fødenet.', symbol: '7', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'energistrommen.html', title: '8. Energistrømmen', text: 'Hvorfor der er mange planter og få ulve.', symbol: '8', color: '--n' },
+  { no: 9, chapter: 'Liv i økosystemet', file: 'primaerproduktion.html', title: '9. Primærproduktion', text: 'Ørken, hede, eng og skov.', symbol: '9', color: '--n' },
+  { no: 9, chapter: 'Fotosyntesen', file: 'fotosyntese-overblik.html', title: '1. Overblik', text: 'Bladets sukkerfabrik og dens to afdelinger.', symbol: '1', color: '--c' },
+  { no: 9, chapter: 'Fotosyntesen', file: 'lys-og-klorofyl.html', title: '2. Lys og klorofyl', text: 'Hvorfor blade er grønne, og hvornår der er nok lys.', symbol: '2', color: '--c' },
+  { no: 9, chapter: 'Fotosyntesen', file: 'lysprocesserne.html', title: '3. Lysprocesserne', text: 'Elektrontransportkæden: trappe, dæmning og turbine.', symbol: '3', color: '--c' },
+  { no: 9, chapter: 'Fotosyntesen', file: 'calvins-cyklus.html', title: '4. Calvins cyklus', text: 'Karrusellen, der bygger sukker af luft.', symbol: '4', color: '--c' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'muskler.html', title: '1. Muskler', text: 'Reb, der kun kan trække. Derfor arbejder de i par.', symbol: '1', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'kulhydrater.html', title: '2. Kulhydrater', text: 'Sukker som perler: én, to eller mange.', symbol: '2', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'blodsukker.html', title: '3. Blodsukker', text: 'Insulin sænker, glukagon hæver.', symbol: '3', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'fordoejelsen.html', title: '4. Fordøjelsen', text: 'Madens metrolinje og enzymernes sakse.', symbol: '4', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'glykaemisk-indeks.html', title: '5. Glykæmisk indeks', text: 'Raket eller cykel?', symbol: '5', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'fedt.html', title: '6. Fedt', text: 'Lige fedtsyrer er smør, knækkede er olie.', symbol: '6', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'respiration-overblik.html', title: '7. Respiration', text: 'Fotosyntesen baglæns: sukker bliver til ATP.', symbol: '7', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'glykolyse.html', title: '8. Glykolyse', text: 'Sukker klippes i to. Og hvad sker der uden ilt?', symbol: '8', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'citronsyrecyklus.html', title: '9. Citronsyrecyklus', text: 'Karrusellen, der slipper CO₂ ud.', symbol: '9', color: '--p' },
+  { no: 2, chapter: 'Energi til arbejdet', file: 'elektrontransportkaeden.html', title: '10. Elektrontransportkæden', text: 'Samme maskine som i bladet, nyt sted.', symbol: '10', color: '--p' },
+  { no: 10, chapter: 'Skovene', file: 'skov-gennem-tiden.html', title: '1. Skoven gennem tiden', text: 'Fældet næsten væk, så plantet igen.', symbol: '1', color: '--c' },
+  { no: 10, chapter: 'Skovene', file: 'succession.html', title: '2. Succession', text: 'Fra bar jord til moden skov af sig selv.', symbol: '2', color: '--c' },
+  { no: 10, chapter: 'Skovene', file: 'skovens-sundhed.html', title: '3. Skovens sundhed', text: 'En tynd krone er et stresset træ.', symbol: '3', color: '--c' },
+  { no: 10, chapter: 'Skovene', file: 'kvaelstofnedfald.html', title: '4. Kvælstofnedfald', text: 'Gødning fra luften. Lidt er godt, meget er for meget.', symbol: '4', color: '--c' },
+  { eyebrow: 'Ekstra', chapter: 'Biologi i den virkelige verden', file: 'fra-planter-til-hollywood.html', title: 'Fra planter til Hollywood', text: 'Hvordan cellulose blev til celluloid og film. Med eksplosioner.', symbol: '★', color: '--p' },
+];
+const groups = {};
+[...TOPICS].sort((a, b) => (a.no ?? 99) - (b.no ?? 99)).forEach(t => (groups[t.chapter] ||= []).push(t));
+document.getElementById('chapters').innerHTML = Object.entries(groups).map(([ch, list]) => `
+  <section class="chapter">
+    <div class="ch">${list[0].eyebrow || 'Kapitel ' + list[0].no}</div>
+    <h2>${ch}</h2>
+    <div class="grid">${list.map(t => `
+      <a class="card" href="${t.file}" style="--a: var(${t.color})">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26"/><path d="M52 14 l8 2 -6 6z"/><text x="32" y="39" text-anchor="middle">${t.symbol}</text></svg>
+        <h3>${t.title}</h3>
+        <p>${t.text}</p>
+      </a>`).join('')}
+    </div>
+  </section>`).join('');
+</script>
+</body>
+</html>
