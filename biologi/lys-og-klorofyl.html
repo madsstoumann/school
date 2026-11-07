@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lys og klorofyl</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: kort over de fire bidder øverst, derefter én stor tegning, der bygges op trin for trin, og en fortæller-boks under den. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --accent: #3d7f2e; --accent-soft: #e3f0dc;
+  --leaf: #4f9a3a; --leaf-soft: #cfe6c4; --sun: #e0a100; --sun-soft: #fbedc4;
+  --water: #2f7fc1; --water-soft: #d6e8f6; --hplus: #d0582a; --electron: #7b4bc4;
+  --carbon: #26302b; --air: #c2412f; --membrane: #b9d3a8; --stroma: #eef6e7; --lumen: #fbeee4;
+  --node: #ffffff; --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --accent: #8fd67a; --accent-soft: #1e2f1a;
+    --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+    --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+    --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --accent: #8fd67a; --accent-soft: #1e2f1a;
+  --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+  --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+  --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; } h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+
+/* Kort over bidderne */
+.map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.map a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); text-decoration: none; font-size: .9rem; min-width: 0; }
+.map a b { font-family: var(--font-display); color: var(--fg); font-size: 1rem; }
+.map a.here { border-color: var(--accent); background: var(--accent-soft); }
+.map a.here b { color: var(--accent); }
+.map a:hover { border-color: var(--accent); }
+@media (max-width: 620px) { .map { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Tegning */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: var(--font-body); fill: var(--fg); font-size: 14px; }
+svg .t { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 700; }
+[data-s] { transition: opacity .3s; }
+.dim [data-s]:not(.on) { opacity: .22; }
+.on .glow, .on.glow { filter: drop-shadow(0 0 6px var(--sun)); }
+.flow { stroke-dasharray: 8 7; }
+.on .flow, .on.flow { animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -30; } }
+.spin { transform-box: fill-box; transform-origin: center; }
+.on .spin { animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hint { font-size: .88rem; color: var(--muted); padding: 10px 18px 0; }
+.story { display: grid; gap: 12px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); margin-top: 12px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story p { max-width: 70ch; }
+.story .img { font-style: italic; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 1.5px solid var(--accent); background: var(--surface); }
+.dots button.on { background: var(--accent); }
+
+.section { display: grid; gap: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; color: var(--accent); }
+.steps .img { font-size: .92rem; color: var(--muted); font-style: italic; }
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 24px; }
+.words div { display: grid; gap: 2px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.words b { font-family: var(--font-display); }
+.words span { color: var(--muted); font-size: .95rem; }
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.q button.wrong { background: var(--hplus); border-color: var(--hplus); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Fotosyntesen · bid 2 af 4</div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <nav class="map" id="map" aria-label="Fotosyntesens fire bidder"></nav>
+
+  <section class="card" aria-label="Tegning">
+    <p class="hint">Tryk Næste for at bygge tegningen op, eller tryk direkte på noget i tegningen.</p>
+    <div class="scroll"><svg viewBox="0 0 820 610" role="img" aria-label="Lysets farver, hvor meget klorofyl a og b fanger af hver farve, klorofylmolekylet, lysblad og skyggeblad, og lysmætningskurver">
+<defs>
+<marker id="m-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+<marker id="m-sun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--sun)"/></marker>
+<marker id="m-water" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--water)"/></marker>
+<marker id="m-leaf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--leaf)"/></marker>
+<marker id="m-air" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--air)"/></marker>
+<marker id="m-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--electron)"/></marker>
+<marker id="m-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--hplus)"/></marker>
+<marker id="m-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+<linearGradient id="spec" x1="0" x2="1"><stop offset="0" stop-color="#8b3fd1"/><stop offset=".22" stop-color="#2f6fe0"/><stop offset=".45" stop-color="#2fa84a"/><stop offset=".62" stop-color="#e3cc25"/><stop offset=".8" stop-color="#f08a24"/><stop offset="1" stop-color="#d6302a"/></linearGradient>
+</defs>
+<g data-s="2"><rect x="330" y="40" width="190" height="160" rx="8" style="fill:var(--leaf-soft)"/><text x="425" y="110" text-anchor="middle" class="b">Grønt fanges</text><text x="425" y="128" text-anchor="middle" class="b">næsten ikke</text>
+<path d="M425,140 Q425,175 470,262" style="fill:none;stroke:var(--leaf);stroke-width:3;stroke-dasharray:6 5" marker-start="url(#m-leaf)"/></g>
+<g data-s="0,1,2,3"><rect x="60" y="210" width="700" height="26" rx="4" style="fill:url(#spec)"/>
+<text x="90" y="256" text-anchor="middle" class="small">violet</text>
+<text x="200" y="256" text-anchor="middle" class="small">blå</text>
+<text x="390" y="256" text-anchor="middle" class="small">grøn</text>
+<text x="505" y="256" text-anchor="middle" class="small">gul</text>
+<text x="610" y="256" text-anchor="middle" class="small">orange</text>
+<text x="725" y="256" text-anchor="middle" class="small">rød</text>
+<path d="M60,200 L760,200" style="stroke:var(--line);stroke-width:1.5"/>
+<text x="60" y="28" class="small">↑ fanget lys</text></g>
+<g data-s="1,3"><path d="M60,170 C90,150 110,52 130,55 C152,58 160,170 205,190 L560,192 C600,188 630,118 671,95 C692,90 702,180 735,196 L760,198" style="fill:none;stroke:var(--leaf);stroke-width:3.5"/>
+<path d="M600,40 l30,0" style="stroke:var(--leaf);stroke-width:3.5"/><text x="638" y="45" class="b">Klorofyl a</text></g>
+<g data-s="3"><path d="M60,192 C120,182 160,42 184,45 C206,48 220,172 262,192 L540,194 C580,190 600,140 625,130 C646,126 656,190 682,196 L760,198" style="fill:none;stroke:var(--sun);stroke-width:3.5;stroke-dasharray:7 5"/>
+<path d="M600,64 l30,0" style="stroke:var(--sun);stroke-width:3.5;stroke-dasharray:7 5"/><text x="638" y="69" class="b">Klorofyl b</text></g>
+<g data-s="4"><text x="40" y="305" class="t">Klorofyl-molekylet</text>
+<rect x="60" y="320" width="90" height="90" rx="22" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:3"/>
+<text x="85" y="350" text-anchor="middle" class="small b">N</text>
+<text x="125" y="350" text-anchor="middle" class="small b">N</text>
+<text x="85" y="390" text-anchor="middle" class="small b">N</text>
+<text x="125" y="390" text-anchor="middle" class="small b">N</text>
+<circle cx="105" cy="365" r="16" style="fill:var(--accent)"/><text x="105" y="370" text-anchor="middle" class="b" style="fill:var(--surface)">Mg</text>
+<path d="M105,410 q14,14 0,28 q-14,14 0,28 q14,14 0,28 q-14,14 0,28 q14,14 0,24" style="fill:none;stroke:var(--leaf);stroke-width:3"/>
+<text x="160" y="350" class="small">hoved:</text><text x="160" y="366" class="small">fanger lyset</text>
+<text x="130" y="480" class="small">hale: sidder</text><text x="130" y="496" class="small">fast i membranen</text></g>
+<g data-s="5"><text x="290" y="305" class="t">Lysblad og skyggeblad</text>
+<rect x="290" y="320" width="210" height="9" rx="3" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<rect x="292" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="313" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="334" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="355" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="376" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="397" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="418" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="439" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="460" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="481" y="332" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="292" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="313" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="334" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="355" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="376" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="397" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="418" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="439" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="460" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="481" y="370" width="17" height="34" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<circle cx="302" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="332" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="362" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="392" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="422" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="452" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="482" cy="417" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<rect x="290" y="430" width="210" height="9" rx="3" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<text x="395" y="458" text-anchor="middle" class="b">Lysblad: tykt, to lag</text>
+<rect x="290" y="476" width="210" height="9" rx="3" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<rect x="292" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="313" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="334" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="355" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="376" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="397" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="418" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="439" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="460" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<rect x="481" y="488" width="17" height="26" rx="6" style="fill:var(--leaf);opacity:.75"/>
+<circle cx="302" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="332" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="362" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="392" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="422" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="452" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<circle cx="482" cy="527" r="8" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<rect x="290" y="540" width="210" height="9" rx="3" style="fill:var(--leaf-soft);stroke:var(--leaf)"/>
+<text x="395" y="568" text-anchor="middle" class="b">Skyggeblad: tyndt, ét lag</text>
+</g>
+<g data-s="6"><text x="560" y="305" class="t">Hvornår er der nok lys?</text>
+<path d="M580,325 L580,545 L800,545" style="fill:none;stroke:var(--muted);stroke-width:2"/>
+<text x="800" y="568" text-anchor="end" class="small">mere lys →</text><text x="588" y="335" class="small">↑ mere fotosyntese</text>
+<path d="M582,540 C640,440 690,370 795,362" style="fill:none;stroke:var(--leaf);stroke-width:3.5"/><text x="795" y="352" text-anchor="end" class="b" style="fill:var(--leaf)">Lysblad</text>
+<path d="M582,540 C605,470 640,445 795,440" style="fill:none;stroke:var(--sun);stroke-width:3.5;stroke-dasharray:7 5"/><text x="795" y="462" text-anchor="end" class="b" style="fill:var(--sun)">Skyggeblad</text>
+</g></svg></div>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div><div class="count" id="count"></div><h3 id="st-title"></h3></div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="img" id="st-img"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Alle trin på én gang</h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Ord, du møder</h2>
+    <div class="words" id="words"></div>
+  </section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+<script>
+const D = {"no": 2, "title": "Lys og klorofyl", "lede": "Før fabrikken kan køre, skal lyset fanges. Det gør det grønne farvestof klorofyl. Men hvorfor er blade grønne, og hvorfor ser blade forskellige ud i sol og skygge?", "story": [{"title": "Lys er en blanding af farver", "text": "Sollys ser hvidt ud, men det er en blanding af alle regnbuens farver, fra violet til rød.", "img": "Som når en prisme eller en regnbue skiller lyset ad."}, {"title": "Klorofyl a spiser blåt og rødt", "text": "Kurven viser, hvor meget lys klorofyl a fanger af hver farve. Den har to toppe: én i det blå og én i det røde.", "img": "Klorofyl er en kræsen spiser: blå og rød er livretterne."}, {"title": "Grønt bliver sendt tilbage", "text": "I midten af farverne, ved grøn, er kurven næsten flad. Det grønne lys bliver ikke fanget, men kastet tilbage. Det er derfor, blade ser grønne ud.", "img": "Bladet er grønt, fordi det er den farve, det ikke vil have."}, {"title": "Klorofyl b hjælper til", "text": "Der er også en anden slags, klorofyl b. Dens toppe ligger lidt ved siden af klorofyl a's. Sammen fanger de flere farver, end hver af dem kunne alene.", "img": "To net med forskellige masker fanger flere fisk end ét."}, {"title": "Klorofyl-molekylet", "text": "Klorofyl har et fladt hoved, der fanger lyset, og en lang hale, der holder det fast i thylakoidmembranen. Midt i hovedet sidder et magnesium-atom (Mg). Derfor skal planter have magnesium for at blive grønne.", "img": "Som en drage: hovedet fanger vinden, halen holder den på plads."}, {"title": "Lysblade og skyggeblade", "text": "Blade i solen er tykke med to lag af lange celler fyldt med kloroplaster. Blade i skyggen er tynde med ét lag. Det er det samme træ, en bøg, men bladene tilpasser sig lyset.", "img": "Solblade er bygget til at æde meget lys. Skyggeblade er bygget til at spare."}, {"title": "Hvornår er der nok lys?", "text": "Mere lys giver mere fotosyntese, men kun op til et vist punkt. Så flader kurven ud, fordi fabrikken kører på fuld kraft. Det hedder lysmætning. Skyggebladet bliver mæt tidligere, men klarer sig bedre i svagt lys.", "img": "Som en motorvej: flere biler giver mere trafik, indtil vejen er fyldt."}], "words": [["Klorofyl", "Grønt farvestof, der fanger lysets energi."], ["Absorbere", "At opsuge, her: at fange lys."], ["Magnesium (Mg)", "Atomet i midten af klorofyl-molekylet."], ["Lysblad / skyggeblad", "Tykt blad i solen / tyndt blad i skyggen."], ["Lysmætning", "Når mere lys ikke længere giver mere fotosyntese."]], "remember": ["<b>Blåt og rødt fanges, grønt kastes tilbage.</b> Derfor er blade grønne.", "<b>To klorofyler fanger mere</b> end én.", "<b>Mg i midten</b> af klorofyl-molekylet.", "<b>Sol giver tykke blade, skygge giver tynde.</b>", "<b>Lysmætning:</b> på et tidspunkt hjælper mere lys ikke."], "quiz": [{"q": "Hvorfor er blade grønne?", "o": ["Fordi de fanger grønt lys", "Fordi de kaster grønt lys tilbage", "Fordi klorofyl er lavet af grønt lys"], "a": 1, "why": "Klorofyl fanger blåt og rødt. Grønt bliver kastet tilbage til dine øjne."}, {"q": "Hvilket atom sidder midt i klorofyl?", "o": ["Jern", "Magnesium", "Kulstof"], "a": 1, "why": "Magnesium (Mg) sidder i midten af klorofylets hoved (figur 173 og 182)."}, {"q": "Hvordan ser et skyggeblad ud sammenlignet med et lysblad?", "o": ["Tyndere med færre cellelag", "Tykkere med flere cellelag", "Helt ens"], "a": 0, "why": "Skyggeblade har ét lag af lange celler, lysblade har to (figur 177)."}, {"q": "Hvad betyder lysmætning?", "o": ["At bladet bliver brændt af solen", "At mere lys ikke giver mere fotosyntese", "At bladet er fuldt af vand"], "a": 1, "why": "Kurven flader ud, fordi fabrikken allerede kører på fuld kraft (figur 178)."}], "note": "Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 173 (klorofyl a), 174 (absorptionsspektrum), 177 (lys- og skyggeblad) og 178 (lysmætningskurver). Kurverne er tegnet efter bogens form, ikke målt præcist."};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title; $('lede').innerHTML = D.lede;
+const MAP = [
+  ['fotosyntese-overblik.html', 'Overblik', 'Fabrikken i bladet'],
+  ['lys-og-klorofyl.html', 'Lys og klorofyl', 'Hvorfor blade er grønne'],
+  ['lysprocesserne.html', 'Lysprocesserne', 'Elektrontransportkæden'],
+  ['calvins-cyklus.html', 'Calvins cyklus', 'Her bygges sukkeret'],
+];
+$('map').innerHTML = MAP.map(([f, t, s], i) => `<a href="${f}" class="${i + 1 === D.no ? 'here' : ''}"${i + 1 === D.no ? ' aria-current="page"' : ''}><b>${i + 1}. ${t}</b>${s}</a>`).join('');
+const svg = document.querySelector('.scroll svg');
+const story = D.story; let cur = 0;
+$('dots').innerHTML = story.map((s, i) => `<button type="button" aria-label="Trin ${i + 1}" data-i="${i}"></button>`).join('');
+$('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$('steps').innerHTML = story.map((s, i) => `<li data-i="${i}"><div class="n">Trin ${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.img ? `<p class="img">${s.img}</p>` : ''}</li>`).join('');
+document.querySelectorAll('#steps li').forEach(li => li.onclick = () => { go(+li.dataset.i); svg.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+svg.querySelectorAll('[data-s]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => { const s = el.dataset.s.split(',').map(Number); go(s.includes(cur) ? s[(s.indexOf(cur) + 1) % s.length] : s[0]); });
+});
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur + 1} af ${story.length}`;
+  $('st-title').innerHTML = s.title; $('st-text').innerHTML = s.text; $('st-img').innerHTML = s.img || '';
+  svg.classList.add('dim');
+  svg.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('on', el.dataset.s.split(',').map(Number).includes(cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+  $('dots').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1); $('next').onclick = () => go(cur + 1);
+go(0);
+$('words').innerHTML = D.words.map(([w, d]) => `<div><b>${w}</b><span>${d}</span></div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi + 1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.onclick = () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a; b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  });
+});
+$('note').innerHTML = D.note;
+</script>
+</body>
+</html>

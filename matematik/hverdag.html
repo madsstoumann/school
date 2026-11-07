@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Differentialregning i hverdagen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<style>
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.duo svg + svg { border-left: 1px solid var(--line); }
+@media (max-width: 620px) { .duo svg + svg { border-left: 0; border-top: 1px solid var(--line); } }
+.meter { height: 16px; border-radius: 8px; background: var(--line); overflow: hidden; max-width: 420px; }
+.meter i { display: block; height: 100%; background: var(--t); border-radius: 8px; transition: width .1s; }
+</style>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 7 af 7</div>
+    <h1>I hverdagen</h1>
+    <p class="lede">Differentialregning svarer på to slags spørgsmål. <b>Hvor hurtigt ændrer noget sig lige nu?</b> Og <b>hvor er det største eller mindste?</b> Her er begge i aktion.</p>
+  </header>
+
+  <section>
+    <h2>Den største fold</h2>
+    <p>En bonde har et hegn på 20 meter og vil lave en rektangulær fold til fårene. Smal og lang, eller bred og kort? Træk i skyderen. Til højre tegnes, hvor meget græs fårene får.</p>
+    <div class="lab">
+      <div class="duo">
+        <svg id="pen" viewBox="0 0 360 300" aria-label="Folden set ovenfra"></svg>
+        <svg id="area" aria-label="Graf over foldens areal"></svg>
+      </div>
+      <div class="controls">
+        <label class="slider" for="w">Smal <input id="w" type="range" min="0.5" max="9.5" step="0.05" value="2"> Bred</label>
+      </div>
+      <div class="readout"><b id="penstate"></b><p id="pensub"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kaffen køler af</h2>
+    <p>En kop kaffe står på bordet. Den blå graf viser temperaturen. Træk hen ad den og se, hvor hurtigt den køler lige nu.</p>
+    <div class="lab">
+      <svg id="cof" aria-label="Kaffens temperatur over tid"></svg>
+      <div class="readout">
+        <b id="cofstate"></b>
+        <div class="meter" aria-hidden="true"><i id="cofbar"></i></div>
+        <p class="hint">Søjlen viser, hvor stejl den orange linje er: hvor hurtigt kaffen køler.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Flere steder, du møder det</h2>
+    <div class="cards">
+      <div class="pcard t"><h3>Bilens speedometer</h3><p>Hvor hurtigt ændrer kilometertælleren sig lige nu? Det er fart.</p></div>
+      <div class="pcard flat"><h3>Højdespring</h3><p>Det højeste punkt i springet er der, hvor kroppen et øjeblik hverken stiger eller falder.</p></div>
+      <div class="pcard up"><h3>Smitte og vækst</h3><p>Stiger kurven stadig mere og mere, eller er den ved at flade ud?</p></div>
+      <div class="pcard f"><h3>Butikkens pris</h3><p>Hvilken pris giver mest i kassen? Toppen af overskudskurven, hvor hældningen er nul.</p></div>
+      <div class="pcard down"><h3>Medicin i blodet</h3><p>Hvornår er der mest, og hvor hurtigt forsvinder det igen?</p></div>
+      <div class="pcard"><h3>Spil og film</h3><p>Fysikmotorer bruger hældninger til at flytte bolde, biler og figurer glat hen over skærmen.</p></div>
+    </div>
+    <div class="remember">
+      <div class="eyebrow">Hele emnet på én linje</div>
+      <p>Find <span class="ct">hældningen</span>. Er den stor, går det stærkt. Er den <span class="cl">nul</span>, står du på en top eller i en bund.</p>
+    </div>
+  </section>
+
+  <nav class="nextnav"><a href="regneregler.html">← Mønstrene</a><a href="index.html">Tilbage til alle emner →</a></nav>
+</div>
+
+<script>
+// folden
+const A = (w) => w * (10 - w);
+const pen = document.getElementById('pen');
+const AP = new Plot(document.getElementById('area'), { w: 360, h: 300, pad: 26, x0: 0, x1: 10, y0: 0, y1: 28, grid: 2, xlabel: 'bredde →', ylabel: '↑ græs' });
+AP.curve(A);
+const at = el('line', { class: 'g-t' }, AP.top);
+const ad = el('circle', { r: 8, class: 'g-dot' }, AP.top);
+const inp = document.getElementById('w');
+function drawPen() {
+  const w = +inp.value, l = 10 - w, u = 26, cx = 180, cy = 150;
+  pen.innerHTML = '';
+  el('rect', { x: cx - w * u / 2, y: cy - l * u / 2, width: w * u, height: l * u, fill: 'var(--up-soft)', stroke: 'var(--t)', 'stroke-width': 4, 'stroke-dasharray': '10 5', rx: 3 }, pen);
+  // får: små skyer
+  const cols = Math.max(1, Math.floor(w * u / 34)), rows = Math.max(1, Math.floor(l * u / 30));
+  for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+    const sx = cx - w * u / 2 + (i + .5) * (w * u / cols), sy = cy - l * u / 2 + (j + .5) * (l * u / rows);
+    if (w * u > 18 && l * u > 18) el('ellipse', { cx: sx, cy: sy, rx: 9, ry: 6.5, fill: 'var(--paper)', stroke: 'var(--muted)', 'stroke-width': 1.5 }, pen);
+  }
+  el('text', { x: 180, y: 290, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--muted)', text: 'Hegnet er lige langt hele tiden' }, pen);
+  const y = A(w), m = 10 - 2 * w;
+  AP.place(ad, w, y); AP.lineAt(at, w, y, m, 1.6);
+  at.style.stroke = Math.abs(m) < 0.3 ? 'var(--flat)' : 'var(--t)';
+  const best = Math.abs(m) < 0.3;
+  document.getElementById('penstate').innerHTML = best ? '<span class="cl">Største fold!</span> Tangenten ligger helt flad.' : m > 0 ? 'Grafen stiger stadig. Gør folden bredere.' : 'Nu falder grafen igen. Du er gået forbi toppen.';
+  document.getElementById('pensub').textContent = best ? 'Og se folden: alle fire sider er lige lange. Den bedste fold er et kvadrat.' : 'Find stedet, hvor den orange linje ligger vandret.';
+}
+inp.addEventListener('input', drawPen);
+AP.drag(AP.svg, (x) => { inp.value = clamp(x, 0.5, 9.5); drawPen(); });
+drawPen();
+
+// kaffen
+const T = (t) => 2 + 7 * Math.exp(-t / 8);
+const CP = new Plot(document.getElementById('cof'), { w: 700, h: 320, x0: 0, x1: 30, y0: 0, y1: 10, grid: 1, xlabel: 'tid →', ylabel: '↑ varme' });
+el('line', { x1: CP.sx(0), x2: CP.sx(30), y1: CP.sy(2), y2: CP.sy(2), stroke: 'var(--muted)', 'stroke-dasharray': '4 6', 'stroke-width': 2 }, CP.bg);
+el('text', { x: CP.sx(30) - 4, y: CP.sy(2) - 8, 'text-anchor': 'end', class: 'g-ax-label', text: 'stuetemperatur' }, CP.bg);
+CP.curve(T);
+const ct = el('line', { class: 'g-t' }, CP.top);
+const cd = el('circle', { r: 9, class: 'g-dot' }, CP.top);
+let tc = 2;
+function drawCof() {
+  const y = T(tc), m = slopeOf(T, tc);
+  CP.place(cd, tc, y); CP.lineAt(ct, tc, y, m, 4);
+  const sp = Math.abs(m) / (7 / 8);
+  document.getElementById('cofbar').style.width = (sp * 100).toFixed(0) + '%';
+  document.getElementById('cofstate').textContent = sp > .6 ? 'Rygende varm: den køler hurtigt. Stejl, nedadgående linje.'
+    : sp > .2 ? 'Lunken: den køler stadig, men langsommere.' : 'Næsten stuetemperatur: grafen er næsten flad, den køler knap nok.';
+}
+CP.drag(CP.svg, (x) => { tc = clamp(x, 0, 30); drawCof(); });
+drawCof();
+</script>
+</body>
+</html>

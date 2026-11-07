@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lysprocesserne</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: kort over de fire bidder øverst, derefter én stor tegning, der bygges op trin for trin, og en fortæller-boks under den. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --accent: #3d7f2e; --accent-soft: #e3f0dc;
+  --leaf: #4f9a3a; --leaf-soft: #cfe6c4; --sun: #e0a100; --sun-soft: #fbedc4;
+  --water: #2f7fc1; --water-soft: #d6e8f6; --hplus: #d0582a; --electron: #7b4bc4;
+  --carbon: #26302b; --air: #c2412f; --membrane: #b9d3a8; --stroma: #eef6e7; --lumen: #fbeee4;
+  --node: #ffffff; --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --accent: #8fd67a; --accent-soft: #1e2f1a;
+    --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+    --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+    --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --accent: #8fd67a; --accent-soft: #1e2f1a;
+  --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+  --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+  --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; } h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+
+/* Kort over bidderne */
+.map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.map a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); text-decoration: none; font-size: .9rem; min-width: 0; }
+.map a b { font-family: var(--font-display); color: var(--fg); font-size: 1rem; }
+.map a.here { border-color: var(--accent); background: var(--accent-soft); }
+.map a.here b { color: var(--accent); }
+.map a:hover { border-color: var(--accent); }
+@media (max-width: 620px) { .map { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Tegning */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: var(--font-body); fill: var(--fg); font-size: 14px; }
+svg .t { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 700; }
+[data-s] { transition: opacity .3s; }
+.dim [data-s]:not(.on) { opacity: .22; }
+.on .glow, .on.glow { filter: drop-shadow(0 0 6px var(--sun)); }
+.flow { stroke-dasharray: 8 7; }
+.on .flow, .on.flow { animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -30; } }
+.spin { transform-box: fill-box; transform-origin: center; }
+.on .spin { animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hint { font-size: .88rem; color: var(--muted); padding: 10px 18px 0; }
+.story { display: grid; gap: 12px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); margin-top: 12px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story p { max-width: 70ch; }
+.story .img { font-style: italic; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 1.5px solid var(--accent); background: var(--surface); }
+.dots button.on { background: var(--accent); }
+
+.section { display: grid; gap: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; color: var(--accent); }
+.steps .img { font-size: .92rem; color: var(--muted); font-style: italic; }
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 24px; }
+.words div { display: grid; gap: 2px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.words b { font-family: var(--font-display); }
+.words span { color: var(--muted); font-size: .95rem; }
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.q button.wrong { background: var(--hplus); border-color: var(--hplus); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Fotosyntesen · bid 3 af 4</div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <nav class="map" id="map" aria-label="Fotosyntesens fire bidder"></nav>
+
+  <section class="card" aria-label="Tegning">
+    <p class="hint">Tryk Næste for at bygge tegningen op, eller tryk direkte på noget i tegningen.</p>
+    <div class="scroll"><svg viewBox="0 0 820 470" role="img" aria-label="Thylakoidmembranen med fotosystem II, elektrontransportører, fotosystem I og ATP-syntetase">
+<defs>
+<marker id="m-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+<marker id="m-sun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--sun)"/></marker>
+<marker id="m-water" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--water)"/></marker>
+<marker id="m-leaf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--leaf)"/></marker>
+<marker id="m-air" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--air)"/></marker>
+<marker id="m-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--electron)"/></marker>
+<marker id="m-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--hplus)"/></marker>
+<marker id="m-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+</defs>
+<g data-s="0"><rect x="0" y="0" width="820" height="185" style="fill:var(--stroma)"/><rect x="0" y="265" width="820" height="205" style="fill:var(--lumen)"/>
+<rect x="0" y="185" width="820" height="80" style="fill:var(--membrane)"/>
+<circle cx="6" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="6" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="20" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="20" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="34" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="34" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="48" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="48" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="62" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="62" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="76" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="76" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="90" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="90" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="104" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="104" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="118" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="118" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="132" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="132" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="146" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="146" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="160" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="160" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="174" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="174" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="188" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="188" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="202" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="202" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="216" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="216" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="230" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="230" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="244" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="244" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="258" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="258" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="272" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="272" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="286" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="286" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="300" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="300" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="314" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="314" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="328" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="328" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="342" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="342" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="356" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="356" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="370" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="370" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="384" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="384" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="398" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="398" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="412" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="412" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="426" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="426" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="440" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="440" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="454" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="454" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="468" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="468" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="482" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="482" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="496" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="496" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="510" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="510" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="524" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="524" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="538" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="538" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="552" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="552" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="566" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="566" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="580" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="580" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="594" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="594" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="608" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="608" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="622" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="622" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="636" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="636" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="650" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="650" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="664" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="664" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="678" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="678" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="692" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="692" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="706" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="706" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="720" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="720" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="734" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="734" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="748" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="748" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="762" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="762" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="776" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="776" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="790" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="790" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="804" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="804" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<circle cx="818" cy="191" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/><circle cx="818" cy="259" r="6" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:1"/>
+<text x="16" y="30" class="t">Stroma</text><text x="16" y="48" class="small">få H⁺</text>
+<text x="16" y="430" class="t">Thylakoidets indre</text><text x="16" y="448" class="small">mange H⁺</text>
+<text x="16" y="230" class="small b">Membran</text></g>
+<text x="250" y="70" class="b" style="fill:var(--hplus);opacity:.7">H⁺</text>
+<text x="610" y="150" class="b" style="fill:var(--hplus);opacity:.7">H⁺</text>
+<g data-s="2,4,7">
+<text x="250" y="350" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="290" y="395" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="395" y="375" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="430" y="340" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="470" y="395" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="510" y="350" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="555" y="390" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="590" y="340" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="625" y="395" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="760" y="350" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="780" y="410" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="520" y="440" class="b" style="fill:var(--hplus)">H⁺</text>
+<text x="440" y="440" class="b" style="fill:var(--hplus)">H⁺</text>
+</g>
+<g data-s="1,2"><rect x="130" y="160" width="92" height="130" rx="24" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:3" class="glow"/><text x="176" y="221" text-anchor="middle" class="b">Foto-</text><text x="176" y="239" text-anchor="middle" class="b">system II</text></g>
+<g data-s="3">
+<circle cx="280" cy="225" r="17" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:2.5"/>
+<circle cx="340" cy="213" r="17" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:2.5"/>
+<circle cx="400" cy="228" r="17" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:2.5"/>
+<text x="340" y="300" text-anchor="middle" class="small b">elektrontransportører</text></g>
+<g data-s="5,6"><rect x="450" y="160" width="92" height="130" rx="24" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:3" class="glow"/><text x="496" y="221" text-anchor="middle" class="b">Foto-</text><text x="496" y="239" text-anchor="middle" class="b">system I</text></g>
+<g data-s="7"><rect x="680" y="175" width="40" height="110" rx="10" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:2.5"/>
+<g class="spin"><circle cx="700" cy="135" r="40" style="fill:var(--leaf-soft);stroke:var(--leaf);stroke-width:3"/><path d="M700,95 L700,175 M665,115 L735,155 M665,155 L735,115" style="stroke:var(--leaf);stroke-width:2"/></g>
+<text x="700" y="312" text-anchor="middle" class="small b">ATP-syntetase</text>
+<path d="M700,420 L700,185" style="stroke:var(--hplus);stroke-width:4" class="flow" marker-end="url(#m-h)"/>
+<text x="712" y="440" class="b" style="fill:var(--hplus)">H⁺ strømmer ud</text></g>
+<g data-s="1"><circle cx="110" cy="70" r="22" style="fill:var(--sun)" class="glow"/><text x="110" y="75" text-anchor="middle" class="b">Lys</text><path d="M124,88 l10,10 l-8,8 l10,10 l-8,8 l10,10 l-8,8 l6,10" style="fill:none;stroke:var(--sun);stroke-width:3"/></g>
+<g data-s="5"><circle cx="430" cy="70" r="22" style="fill:var(--sun)" class="glow"/><text x="430" y="75" text-anchor="middle" class="b">Lys</text><path d="M444,88 l10,10 l-8,8 l10,10 l-8,8 l10,10 l-8,8 l6,10" style="fill:none;stroke:var(--sun);stroke-width:3"/></g>
+<g data-s="2"><text x="100" y="385" text-anchor="middle" class="b" style="fill:var(--water)">Vand (H₂O)</text><path d="M110,370 L150,300" style="stroke:var(--water);stroke-width:4" marker-end="url(#m-water)"/>
+<path d="M195,300 L222,350" style="stroke:var(--leaf);stroke-width:4" marker-end="url(#m-leaf)"/><text x="232" y="372" class="b" style="fill:var(--leaf)">Ilt (O₂)</text></g>
+<g data-s="1,3,5"><path d="M210,228 C240,242 258,226 280,225 S320,210 340,213 S380,236 400,228 S438,220 452,224" style="fill:none;stroke:var(--electron);stroke-width:3.5" class="flow" marker-end="url(#m-e)"/>
+<text x="232" y="216" class="b" style="fill:var(--electron)">e⁻</text><text x="418" y="212" class="b" style="fill:var(--electron)">e⁻</text></g>
+<g data-s="4"><path d="M340,100 L340,330" style="stroke:var(--hplus);stroke-width:4" class="flow" marker-end="url(#m-h)"/><text x="352" y="108" class="b" style="fill:var(--hplus)">H⁺</text><text x="352" y="128" class="small">pumpes ind</text></g>
+<g data-s="6,8"><path d="M520,160 C535,120 548,100 560,92" style="fill:none;stroke:var(--electron);stroke-width:3.5" class="flow" marker-end="url(#m-e)"/>
+<text x="560" y="78" text-anchor="middle" class="b">NADP⁺ → NADPH</text></g>
+<g data-s="7,8"><text x="700" y="78" text-anchor="middle" class="b">ADP + P → ATP</text></g>
+<g data-s="8"><rect x="540" y="14" width="250" height="32" rx="16" style="fill:var(--accent)"/><text x="665" y="35" text-anchor="middle" class="b" style="fill:var(--surface)">→ videre til Calvins cyklus</text></g>
+</svg></div>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div><div class="count" id="count"></div><h3 id="st-title"></h3></div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="img" id="st-img"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Alle trin på én gang</h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Ord, du møder</h2>
+    <div class="words" id="words"></div>
+  </section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+<script>
+const D = {"no": 3, "title": "Lysprocesserne", "lede": "Her sker det mest geniale i fotosyntesen: elektrontransportkæden. Lyset giver elektroner energi, og den energi bruges til at lade batterierne ATP og NADPH op. Følg elektronerne trin for trin.", "story": [{"title": "En membran med to rum", "text": "Vi zoomer helt ind på en thylakoid-membran. Over den ligger stroma, under den thylakoidets indre. Inde i membranen sidder en række proteiner, som en samlebånd.", "img": "Membranen er en dæmning mellem to søer."}, {"title": "Lyset rammer fotosystem II", "text": "Lys rammer klorofyllet i fotosystem II. Energien skubber to elektroner (e⁻) op på et højt energiniveau, så de springer videre.", "img": "Som at sparke en bold op ad en bakke. Nu kan den trille ned igen og udføre arbejde."}, {"title": "Vand spaltes", "text": "Fotosystem II har nu mistet elektroner og stjæler nye fra vand. Vandet flås fra hinanden til elektroner, H⁺ og ilt. Ilten bliver sendt ud af bladet.", "img": "Vand er elektron-leverandøren. Ilt er affaldet."}, {"title": "Elektronerne løber gennem kæden", "text": "Elektronerne hopper fra transportør til transportør gennem membranen. For hvert hop mister de lidt energi.", "img": "Som en bold, der triller ned ad en trappe, trin for trin."}, {"title": "Energien pumper H⁺ ind", "text": "Energien fra elektronerne bruges til at pumpe H⁺ fra stroma ind i thylakoidets indre. Her samles der nu rigtig mange H⁺.", "img": "Vandet hober sig op bag dæmningen."}, {"title": "Fotosystem I får nyt lys", "text": "Elektronerne når fotosystem I. Her rammer nyt lys og giver dem et nyt energi-skub.", "img": "Bolden bliver sparket op ad bakken en gang til."}, {"title": "NADPH bliver ladet op", "text": "De nyopladte elektroner bliver sat på NADP⁺ sammen med H⁺. Så er det første batteri, NADPH, ladet op.", "img": "Batteri nummer ét er klar."}, {"title": "ATP-syntetasen: en vandmølle", "text": "Der er nu masser af H⁺ inde i thylakoidet og få udenfor. De vil gerne ud, og den eneste vej er gennem ATP-syntetase. Når de strømmer igennem, drejer proteinet rundt og sætter fosfat (P) på ADP, så der dannes ATP.", "img": "Vandet fra dæmningen strømmer gennem en turbine, og turbinen laver strøm."}, {"title": "Batterierne sendes videre", "text": "Både ATP og NADPH ligger nu i stroma, klar til Calvins cyklus, som bruger dem til at bygge sukker.", "img": "Fra lys til opladte batterier. Næste stop: sukkerfabrikken."}], "words": [["Elektron (e⁻)", "Lille ladet partikel, der kan bære energi."], ["Fotosystem II og I", "Proteiner med klorofyl, der fanger lys. II kommer først, selvom tallet er højest."], ["Elektrontransportkæde", "Række af proteiner, som elektronerne hopper igennem."], ["H⁺", "Brint-ion. Der pumpes mange ind i thylakoidet."], ["ATP-syntetase", "Protein, der drejer rundt og laver ATP, når H⁺ strømmer igennem."], ["NADPH", "Energibærer, der bærer elektroner med energi videre."]], "remember": ["<b>To lysskub:</b> først fotosystem II, så fotosystem I.", "<b>Vand giver elektroner</b>, og ilten er affaldet.", "<b>Trappe og dæmning:</b> elektroner triller ned ad trappen, energien pumper H⁺ bag dæmningen.", "<b>Turbinen:</b> H⁺ strømmer ud gennem ATP-syntetase og laver ATP.", "<b>Resultat:</b> ATP og NADPH til Calvins cyklus."], "quiz": [{"q": "Hvor får fotosystem II nye elektroner fra?", "o": ["Fra CO₂", "Fra vand", "Fra sukker"], "a": 1, "why": "Vand bliver spaltet, og elektronerne erstatter dem, lyset skubbede væk."}, {"q": "Hvor er der flest H⁺?", "o": ["I stroma", "Inde i thylakoidet", "Lige mange begge steder"], "a": 1, "why": "Elektrontransportkæden pumper H⁺ ind i thylakoidet (figur 179)."}, {"q": "Hvad driver ATP-syntetasen?", "o": ["H⁺, der strømmer ud gennem den", "Lys, der rammer den direkte", "Sukker"], "a": 0, "why": "H⁺ strømmer fra det fyldte rum mod det tomme, og det får proteinet til at dreje som en turbine."}, {"q": "Hvilke to stoffer er resultatet af lysprocesserne?", "o": ["Glukose og CO₂", "ATP og NADPH (og ilt som affald)", "Vand og klorofyl"], "a": 1, "why": "ATP og NADPH går videre til Calvins cyklus. Ilten sendes ud."}], "note": "Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 179 (fotosyntesens lysprocesser). Billedsproget (trappe, dæmning, turbine) er tilføjet for at gøre det lettere at huske."};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title; $('lede').innerHTML = D.lede;
+const MAP = [
+  ['fotosyntese-overblik.html', 'Overblik', 'Fabrikken i bladet'],
+  ['lys-og-klorofyl.html', 'Lys og klorofyl', 'Hvorfor blade er grønne'],
+  ['lysprocesserne.html', 'Lysprocesserne', 'Elektrontransportkæden'],
+  ['calvins-cyklus.html', 'Calvins cyklus', 'Her bygges sukkeret'],
+];
+$('map').innerHTML = MAP.map(([f, t, s], i) => `<a href="${f}" class="${i + 1 === D.no ? 'here' : ''}"${i + 1 === D.no ? ' aria-current="page"' : ''}><b>${i + 1}. ${t}</b>${s}</a>`).join('');
+const svg = document.querySelector('.scroll svg');
+const story = D.story; let cur = 0;
+$('dots').innerHTML = story.map((s, i) => `<button type="button" aria-label="Trin ${i + 1}" data-i="${i}"></button>`).join('');
+$('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$('steps').innerHTML = story.map((s, i) => `<li data-i="${i}"><div class="n">Trin ${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.img ? `<p class="img">${s.img}</p>` : ''}</li>`).join('');
+document.querySelectorAll('#steps li').forEach(li => li.onclick = () => { go(+li.dataset.i); svg.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+svg.querySelectorAll('[data-s]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => { const s = el.dataset.s.split(',').map(Number); go(s.includes(cur) ? s[(s.indexOf(cur) + 1) % s.length] : s[0]); });
+});
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur + 1} af ${story.length}`;
+  $('st-title').innerHTML = s.title; $('st-text').innerHTML = s.text; $('st-img').innerHTML = s.img || '';
+  svg.classList.add('dim');
+  svg.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('on', el.dataset.s.split(',').map(Number).includes(cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+  $('dots').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1); $('next').onclick = () => go(cur + 1);
+go(0);
+$('words').innerHTML = D.words.map(([w, d]) => `<div><b>${w}</b><span>${d}</span></div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi + 1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.onclick = () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a; b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  });
+});
+$('note').innerHTML = D.note;
+</script>
+</body>
+</html>

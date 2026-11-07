@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skole i billeder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: to store døre. Hvert fag har sin egen farve og sin egen tegning, ligesom på fagenes egne forsider. */
+:root {
+  --bg: #f3f5f6; --surface: #ffffff; --fg: #18201f; --muted: #58636a; --line: #d6dde2;
+  --bio: #2f6f4a; --bio-soft: #e3f1e8; --mat: #2c55c9; --mat-soft: #e4ebfb; --accent: #e06a12;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #101517; --surface: #182024; --fg: #e6ecee; --muted: #9eabb2; --line: #2b373d; --bio: #7fd3a0; --bio-soft: #17291f; --mat: #86a6ff; --mat-soft: #1d2741; --accent: #ffa25c; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #101517; --surface: #182024; --fg: #e6ecee; --muted: #9eabb2; --line: #2b373d; --bio: #7fd3a0; --bio-soft: #17291f; --mat: #86a6ff; --mat-soft: #1d2741; --accent: #ffa25c; color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+.wrap { max-width: 1000px; margin: 0 auto; display: grid; gap: 72px; }
+h1, h2 { font-family: var(--font-display); margin: 0; line-height: 1.1; text-wrap: balance; }
+h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 2rem; font-weight: 800; }
+p { margin: 0; }
+header { display: grid; gap: 12px; }
+.lede { font-size: 1.2rem; max-width: 56ch; color: var(--muted); }
+.doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+a.door {
+  --a: var(--bio); --s: var(--bio-soft);
+  display: grid; gap: 14px; align-content: start; padding: 24px; border-radius: 22px;
+  background: var(--surface); border: 2px solid var(--line); color: inherit; text-decoration: none;
+  transition: transform .15s, border-color .15s;
+}
+a.door.mat { --a: var(--mat); --s: var(--mat-soft); }
+a.door:hover { transform: translateY(-4px); border-color: var(--a); }
+a.door:focus-visible { outline: 3px solid var(--a); outline-offset: 3px; }
+a.door .pic { background: var(--s); border-radius: 16px; padding: 12px; }
+a.door svg { display: block; width: 100%; height: auto; }
+a.door .eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+a.door h2 { color: var(--a); }
+a.door p { color: var(--muted); }
+a.door .go { font-weight: 700; color: var(--a); }
+.how { font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; }
+@media (prefers-reduced-motion: reduce) { a.door { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Skole i billeder</h1>
+    <p class="lede">Vælg et fag. Alt er tegninger, du kan trykke, trække og lege med.</p>
+  </header>
+
+  <div class="doors">
+    <a class="door" href="biologi/">
+      <div class="pic">
+        <svg viewBox="0 0 300 150" aria-hidden="true">
+          <circle cx="150" cy="75" r="58" fill="none" stroke="var(--a)" stroke-width="6" stroke-dasharray="70 20" stroke-linecap="round"/>
+          <path d="M203 33 l14 2 -9 11z" fill="var(--a)"/>
+          <path d="M150 112 C118 100 112 64 150 40 C188 64 182 100 150 112 Z" fill="var(--a)"/>
+          <path d="M150 112 V58" stroke="var(--s)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M150 90 l-14 -12 M150 76 l14 -12" stroke="var(--s)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="eyebrow">Fag 1</div>
+      <h2>Biologi</h2>
+      <p>Kredsløb, fotosyntese, økosystemer og kroppens energi. Følg stofferne rundt.</p>
+      <span class="go">Gå til biologi →</span>
+    </a>
+
+    <a class="door mat" href="matematik/">
+      <div class="pic">
+        <svg viewBox="0 0 300 150" aria-hidden="true">
+          <path d="M20 130 C90 130 110 40 170 40 S250 100 285 20" fill="none" stroke="var(--a)" stroke-width="6" stroke-linecap="round"/>
+          <line x1="115" y1="40" x2="225" y2="40" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="170" cy="40" r="10" fill="var(--surface)" stroke="var(--accent)" stroke-width="5"/>
+        </svg>
+      </div>
+      <div class="eyebrow">Fag 2</div>
+      <h2>Matematik</h2>
+      <p>Differentialregning: hvor stejl er grafen lige her? Træk og zoom dig frem til svaret.</p>
+      <span class="go">Gå til matematik →</span>
+    </a>
+  </div>
+
+  <p class="how">Nye emner kommer løbende til under hvert fag.</p>
+</div>
+</body>
+</html>

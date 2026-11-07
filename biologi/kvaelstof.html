@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+<title>Kvælstoffets kredsløb</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: et stort interaktivt kredsløbsdiagram øverst, derefter "følg et atom"-trin, tal fra bogen og en lille quiz. */
+:root {
+  --bg: #f2f5f3;
+  --surface: #ffffff;
+  --fg: #17211c;
+  --muted: #56645c;
+  --line: #d5ded8;
+  --sky: #e3eef6;
+  --soil: #eadfd2;
+  --water: #cfe3ef;
+  --accent: #3557b7;
+  --accent-soft: #e4eaf8;
+  --bio: #2f8a4f;
+  --micro: #9a5a1c;
+  --human: #b8343a;
+  --geo: #5b6a86;
+  --node: #ffffff;
+  --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --sky: #17252f; --soil: #2a2219; --water: #18303d;
+    --accent: #8fa9ff; --accent-soft: #1d2740;
+    --bio: #6fcf8e; --micro: #e3a25f; --human: #ff7d7f; --geo: #9fb0d6;
+    --node: #1e2924; --node-line: #3d4e45;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --sky: #17252f; --soil: #2a2219; --water: #18303d;
+  --accent: #8fa9ff; --accent-soft: #1d2740;
+  --bio: #6fcf8e; --micro: #e3a25f; --human: #ff7d7f; --geo: #9fb0d6;
+  --node: #1e2924; --node-line: #3d4e45;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 700; }
+h3 { font-size: 1.1rem; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+header { display: grid; gap: 14px; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+.formula { display: inline-block; font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; color: var(--accent); }
+.big-idea { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--accent-soft); font-size: .92rem; }
+.chip b { color: var(--accent); }
+
+/* Diagram */
+.diagram-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.diagram-scroll { overflow-x: auto; }
+.diagram-scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 18px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 22px; height: 4px; border-radius: 2px; display: inline-block; }
+.hint { font-size: .88rem; color: var(--muted); padding: 0 18px 14px; }
+
+svg text { font-family: var(--font-body); fill: var(--fg); }
+.node rect { fill: var(--node); stroke: var(--node-line); stroke-width: 1.5; }
+.node .t { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.node .s { font-size: 12px; fill: var(--muted); }
+.node .f { font-family: var(--font-display); font-weight: 800; font-size: 13px; fill: var(--accent); }
+.edge path { fill: none; stroke-width: 3; opacity: .6; transition: opacity .2s, stroke-width .2s; }
+.edge .lab rect { fill: var(--surface); stroke-width: 1.5; }
+.edge .lab text { font-size: 12.5px; font-weight: 700; }
+.edge { cursor: pointer; }
+.edge:hover path, .edge.on path { opacity: 1; stroke-width: 5; }
+.edge.on .lab rect { stroke-width: 3; }
+.edge:focus { outline: none; }
+.edge:focus-visible .lab rect { stroke-width: 3.5; }
+.dim .edge:not(.on) { opacity: .7; }
+.k-bio { stroke: var(--bio); } .k-micro { stroke: var(--micro); } .k-human { stroke: var(--human); } .k-geo { stroke: var(--geo); }
+.f-bio { fill: var(--bio); } .f-micro { fill: var(--micro); } .f-human { fill: var(--human); } .f-geo { fill: var(--geo); }
+.c-bio { color: var(--bio); } .c-micro { color: var(--micro); } .c-human { color: var(--human); } .c-geo { color: var(--geo); }
+.bg-bio { background: var(--bio); } .bg-micro { background: var(--micro); } .bg-human { background: var(--human); } .bg-geo { background: var(--geo); }
+.band-sky { fill: var(--sky); } .band-soil { fill: var(--soil); } .band-water { fill: var(--water); }
+.band-label { font-size: 11px; letter-spacing: .12em; fill: var(--muted); font-weight: 700; }
+.dot { fill: var(--accent); }
+
+/* Story panel */
+.story { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story .who { font-size: .92rem; color: var(--muted); }
+.story p { max-width: 70ch; }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+
+/* Pattern strip */
+.pattern { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pattern .p { padding: 8px 14px; border-radius: 10px; background: var(--surface); border: 1.5px solid var(--line); font-weight: 700; }
+.pattern .p.store { border-color: var(--accent); color: var(--accent); }
+.pattern .ar { color: var(--muted); font-weight: 700; }
+.special { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.special b { color: var(--accent); }
+/* Visual facts */
+.bars { display: grid; gap: 6px; margin-top: 6px; }
+.bar { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; align-items: center; font-size: .9rem; }
+.bar .track { height: 14px; border-radius: 7px; background: var(--accent-soft); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; background: var(--accent); }
+.bar .fill.alt { background: var(--human); }
+.eq { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.eq span { padding: 4px 10px; border-radius: 8px; background: var(--accent-soft); font-weight: 700; }
+.eq .op { background: none; color: var(--muted); padding: 0 2px; }
+/* Steps list */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; display: flex; align-items: center; gap: 8px; }
+.steps .n i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.steps .who { font-size: .88rem; color: var(--muted); }
+.section { display: grid; gap: 16px; }
+.section > p { max-width: 68ch; color: var(--muted); }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.fact { border-left: 4px solid var(--accent); padding: 4px 0 4px 14px; display: grid; gap: 4px; }
+.fact .v { font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.fact .d { font-size: .95rem; }
+.fact .src { font-size: .8rem; color: var(--muted); }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.two > div { min-width: 0; display: grid; gap: 10px; align-content: start; }
+ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--bio); border-color: var(--bio); color: var(--surface); }
+.q button.wrong { background: var(--human); border-color: var(--human); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 6px; }
+.tag-extra { display: inline-block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
+sub, sup { line-height: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+.edge.on path { stroke-dasharray: 10 6; animation: flow .8s linear infinite; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Biologi · Kredsløb</div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+    <div class="big-idea" id="chips"></div>
+  </header>
+
+  <section class="diagram-card" aria-label="Kredsløbsdiagram">
+    <div class="diagram-scroll"><svg id="svg" role="img"></svg></div>
+    <div class="legend" id="legend"></div>
+    <p class="hint">Tryk på en pil i tegningen, eller brug knapperne, for at følge et atom rundt.</p>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div>
+          <div class="count" id="count"></div>
+          <h3 id="st-title"></h3>
+        </div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="who" id="st-who"></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Samme mønster i alle kredsløb</h2>
+    <div class="pattern" id="pattern"></div>
+    <p class="special" id="special"></p>
+  </section>
+
+  <section class="section">
+    <h2 id="steps-h"></h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section" id="facts-sec">
+    <h2>Set i bogen</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="two" id="extra"></section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+
+<script>
+const D = {"title": "Kvælstoffets kredsløb", "lede": "Alt levende skal bruge kvælstof (N) til at bygge proteiner og DNA. Luften er fuld af det, men næsten ingen organismer kan bruge det direkte. Derfor er det <b>bakterier</b>, der holder kredsløbet i gang.", "chips": ["<b>N₂</b> i luften: 78 %, men utilgængelig", "Planter optager <b>NO₃⁻</b> og <b>NH₄⁺</b>", "Bakterier styrer de fleste trin"], "svgLabel": "Diagram over kvælstoffets kredsløb mellem luft, planter, dyr, dødt materiale og jorden", "view": [820, 600], "bands": [{"type": "sky", "y": 0, "h": 262, "label": "LUFT"}, {"type": "soil", "y": 262, "h": 338, "label": "JORD"}], "nodes": [{"id": "atm", "label": "Kvælstof i luften", "sub": "78 % af luften", "f": "N₂", "x": 150, "y": 70, "w": 180}, {"id": "dep", "label": "Forurening i luften", "sub": "landbrug, trafik, industri", "f": "NH₃ · NH₄⁺ · NO₃⁻", "x": 650, "y": 70, "w": 200}, {"id": "plants", "label": "Planter", "sub": "protein, DNA, klorofyl", "x": 310, "y": 200}, {"id": "animals", "label": "Dyr", "sub": "spiser planterne", "x": 520, "y": 200, "w": 140}, {"id": "dead", "label": "Dødt organisk materiale", "sub": "blade, gødning, døde dyr", "x": 520, "y": 340, "w": 220}, {"id": "nh4", "label": "Ammonium", "sub": "i jorden", "f": "NH₄⁺", "x": 640, "y": 480}, {"id": "no3", "label": "Nitrat", "sub": "i jordvandet", "f": "NO₃⁻", "x": 330, "y": 480}, {"id": "vand", "label": "Grundvand og vandløb", "sub": "tabt fra jorden", "x": 120, "y": 550, "w": 190}], "edges": [{"from": "atm", "to": "plants", "name": "N-fiksering", "kind": "micro", "step": 0, "bend": -30}, {"from": "plants", "to": "animals", "name": "Føde", "kind": "bio", "step": 1}, {"from": "plants", "to": "dead", "name": "Visne blade", "kind": "bio", "step": 2, "bend": -20, "lo": [-10, 4]}, {"from": "animals", "to": "dead", "name": "Gødning, død", "short": "Gødning", "kind": "bio", "step": 2, "ao": [30, 0], "bo": [30, 0]}, {"from": "dead", "to": "nh4", "name": "Nedbrydning og ammonifikation", "short": "Ammonifikation", "kind": "micro", "step": 3, "bend": -30}, {"from": "nh4", "to": "no3", "name": "Nitrifikation", "kind": "micro", "step": 4}, {"from": "no3", "to": "plants", "name": "Planteoptag", "kind": "bio", "step": 5, "bend": -20}, {"from": "no3", "to": "atm", "name": "Denitrifikation", "kind": "micro", "step": 6, "bend": -90, "lo": [0, 10]}, {"from": "no3", "to": "vand", "name": "Udvaskning", "kind": "geo", "step": 7, "bend": 40}, {"from": "dep", "to": "nh4", "name": "Nedfald med regn", "short": "Nedfald", "kind": "human", "step": 8, "bend": -90, "ao": [60, 0], "bo": [60, 0]}], "store": "Jorden (nitrat)", "special": "Luftens kvælstof er låst. Kun bakterier har nøglen, både ind (N-fiksering) og ud (denitrifikation).", "stepsTitle": "Følg et kvælstofatom rundt", "story": [{"title": "N-fiksering: kvælstof hentes ned fra luften", "text": "Luftens N₂ er to atomer bundet meget hårdt sammen. Kun nogle få bakterier kan bryde bindingen og lave det om til ammonium, som planter kan bruge. Mange af dem lever i små knolde på rødderne af kløver, ærter og el.", "who": "Hvem: kvælstoffikserende bakterier (fx i rodknolde) og cyanobakterier"}, {"title": "Kvælstof går videre i fødekæden", "text": "Planten bygger kvælstoffet ind i proteiner og DNA. Når et dyr spiser planten, bliver plantens protein til dyrets protein.", "who": "Hvem: planteædere og rovdyr"}, {"title": "Døde blade og gødning havner på jorden", "text": "Visne blade, ekskrementer og døde dyr ender som dødt organisk materiale. Kvælstoffet sidder stadig fast i proteiner, så planter kan ikke bruge det endnu.", "who": "Hvem: alle organismer"}, {"title": "Nedbrydning og ammonifikation", "text": "Nedbrydere spiser det døde materiale og slipper kvælstoffet ud som ammonium (NH₄⁺). Det kaldes mineralisering, fordi organisk stof bliver til uorganiske salte igen.", "who": "Hvem: bakterier og svampe i jorden"}, {"title": "Nitrifikation: ammonium bliver til nitrat", "text": "Andre bakterier laver ammonium om til nitrat, via et mellemtrin der hedder nitrit. Bakterierne lever af energien i det, og de skal bruge ilt.", "who": "Hvem: nitrifikationsbakterier (kemotrofe, se figur 17)"}, {"title": "Planteoptag", "text": "Rødderne suger nitrat (og ammonium) op fra jordvandet. Nu er vi tilbage ved trin 2, og kvælstoffet kan gå rundt igen og igen.", "who": "Hvem: planternes rødder, ofte hjulpet af mykorrhizasvampe"}, {"title": "Denitrifikation: kvælstof sendes tilbage til luften", "text": "I våd jord uden ilt bruger nogle bakterier nitrat i stedet for ilt. Kvælstoffet ender som N₂ og forsvinder op i luften. Det lukker kredsløbet.", "who": "Hvem: denitrificerende bakterier i iltfattig jord"}, {"title": "Udvaskning: nitrat løber væk", "text": "Nitrat er let opløseligt i vand. Hvis planterne ikke når at tage det, skyller regnen det ned i grundvandet og ud i vandløb og hav, hvor det kan give algevækst og iltsvind.", "who": "Hvem: regnvand, der siver gennem jorden"}, {"title": "Nedfald: ekstra kvælstof fra luften", "text": "Ammoniak fra landbrug og kvælstofilter fra trafik og industri falder ned med regn (våddeposition) eller som støv og gas (tørdeposition). Det er en ekstra gødning, som naturen ikke har bedt om.", "who": "Hvem: mennesket (figur 210 og 211)"}], "facts": [{"v": "Skoven holder på kvælstoffet", "d": "Der kommer meget mere ind, end der slipper ud igen.", "bars": [{"l": "Ind (løvskov)", "v": 9.2}, {"l": "Ud (løvskov)", "v": 2.3, "alt": true}, {"l": "Ind (nåleskov)", "v": 6.0}, {"l": "Ud (nåleskov)", "v": 1.2, "alt": true}], "src": "Figur 198"}, {"v": "Mest nedfald i Syddanmark", "d": "Kvælstof fra luften rammer hele landet, men ikke lige meget.", "bars": [{"l": "Syddanmark", "v": 19}, {"l": "Midtjylland", "v": 17}, {"l": "Nordjylland", "v": 16}, {"l": "Hovedstaden", "v": 15}, {"l": "Sjælland", "v": 14}], "src": "Figur 211 (2006)"}], "extra": [{"h": "Hvad bruger planten kvælstof til?", "body": "<ul class=\"plain\"><li>Aminosyrer og dermed proteiner</li><li>DNA og RNA</li><li>ATP og ADP (cellens energi)</li><li>Klorofyl, det grønne farvestof</li><li>Visse vitaminer</li></ul><p class=\"who\" style=\"color:var(--muted);font-size:.88rem\">Optages som NO₃⁻, NH₄⁺ eller NH₃. Figur 182.</p>"}, {"h": "Når der kommer for meget", "body": "<p>Øget kvælstofnedfald gør skoven mere produktiv i starten, men det har bagsider (figur 212):</p><ul class=\"plain\"><li>Arter, der elsker kvælstof, fx brændenælder, udkonkurrerer andre. Artssammensætningen ændres.</li><li>Træerne bliver mere følsomme over for tørke, frost og skadedyr.</li><li>Til sidst er det ikke kvælstof, men <b>fosfor</b>, der begrænser væksten.</li></ul>"}], "remember": ["<b>Luften er et lager, men et låst lager.</b> Kun bakterier kan låse N₂ op (N-fiksering) og sende det tilbage (denitrifikation).", "<b>Huskeregel for jorden: A, N, P.</b> <b>A</b>mmonifikation laver NH₄⁺, <b>N</b>itrifikation laver NO₃⁻, <b>P</b>lanteoptag bruger det.", "<b>Ilt afgør retningen.</b> Nitrifikation kræver ilt. Denitrifikation sker, hvor der mangler ilt.", "<b>Nitrat er glat.</b> Det opløses let og vaskes ud, så det kan skade vandmiljøet."], "quiz": [{"q": "Hvorfor kan planter ikke bare bruge luftens N₂?", "o": ["Der er for lidt af det", "Bindingen mellem de to N-atomer er for stærk", "N₂ er giftigt for planter"], "a": 1, "why": "N₂ er 78 % af luften, men den tredobbelte binding er så stærk, at kun N-fikserende bakterier kan bryde den."}, {"q": "Hvilken proces laver ammonium om til nitrat?", "o": ["Denitrifikation", "Ammonifikation", "Nitrifikation"], "a": 2, "why": "Nitrifikationsbakterier laver ammonium om til nitrat, og de skal bruge ilt til det."}, {"q": "Hvor sker denitrifikation mest?", "o": ["I våd jord uden ilt", "I tør, luftig jord", "Inde i bladene"], "a": 0, "why": "Uden ilt bruger nogle bakterier nitrat i stedet, og kvælstoffet slipper ud som N₂."}, {"q": "Hvad sker der med en løvskov, der får meget kvælstofnedfald?", "o": ["Intet, kvælstof er kun godt", "Arterne ændrer sig, og fosfor kan blive den begrænsende faktor", "Træerne holder op med fotosyntese"], "a": 1, "why": "Figur 212 viser, at øget nedfald ændrer artssammensætningen og kan flytte begrænsningen fra kvælstof til fosfor."}], "note": "<p>Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 182, 185, 197, 198, 210, 211 og 212. Forklaringerne er skrevet i et enklere sprog end bogen.</p>"};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title;
+$('lede').innerHTML = D.lede;
+$('chips').innerHTML = D.chips.map(c => `<span class="chip">${c}</span>`).join('');
+$('steps-h').innerHTML = D.stepsTitle;
+const KIND = { bio: 'Levende organismer', micro: 'Bakterier og svampe', human: 'Mennesket', geo: 'Fysik, kemi og geologi' };
+const usedKinds = [...new Set(D.edges.map(e => e.kind))];
+$('legend').innerHTML = usedKinds.map(k => `<span><i class="bg-${k}"></i>${KIND[k]}</span>`).join('');
+
+// ---------- Diagram ----------
+const NS = 'http://www.w3.org/2000/svg';
+const svg = $('svg');
+const W = D.view[0], H = D.view[1];
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+svg.setAttribute('aria-label', D.svgLabel);
+const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+
+const defs = el('defs', {}, svg);
+for (const k of ['bio','micro','human','geo']) {
+  const m = el('marker', { id: 'ar-' + k, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' }, defs);
+  el('path', { d: 'M0,0 L10,5 L0,10 z', class: 'f-' + k }, m);
+}
+for (const b of D.bands) {
+  el('rect', { x: b.x || 0, y: b.y, width: b.w || W, height: b.h, class: 'band-' + b.type }, svg);
+  if (b.label) { const t = el('text', { x: (b.x || 0) + 12, y: b.y + 18, class: 'band-label' }, svg); t.textContent = b.label; }
+}
+const edgeLayer = el('g', {}, svg);
+const nodeLayer = el('g', {}, svg);
+const labelLayer = el('g', {}, svg);
+const N = {};
+for (const n of D.nodes) {
+  N[n.id] = n;
+  n.w = n.w || 150; n.h = n.h || 58;
+  const g = el('g', { class: 'node' }, nodeLayer);
+  el('rect', { x: n.x - n.w/2, y: n.y - n.h/2, width: n.w, height: n.h, rx: 12 }, g);
+  const t = el('text', { x: n.x, y: n.y - (n.sub ? 4 : -5), 'text-anchor': 'middle', class: 't' }, g); t.textContent = n.label;
+  if (n.sub) { const s = el('text', { x: n.x, y: n.y + 14, 'text-anchor': 'middle', class: 's' }, g); s.textContent = n.sub; }
+  if (n.f) { const f = el('text', { x: n.x + n.w/2 - 8, y: n.y - n.h/2 - 6, 'text-anchor': 'end', class: 'f' }, g); f.textContent = n.f; }
+}
+function edgePoint(n, px, py, dx, dy) {
+  const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+  const hw = n.w/2 + 5, hh = n.h/2 + 5;
+  const tx = dx ? ((dx > 0 ? n.x + hw - px : px - (n.x - hw)) / Math.abs(dx)) : Infinity;
+  const ty = dy ? ((dy > 0 ? n.y + hh - py : py - (n.y - hh)) / Math.abs(dy)) : Infinity;
+  const t = Math.min(tx, ty);
+  return [px + dx*t, py + dy*t];
+}
+const edgeEls = [];
+D.edges.forEach((e, i) => {
+  const a = N[e.from], b = N[e.to];
+  const ax = a.x + (e.ao ? e.ao[0] : 0), ay = a.y + (e.ao ? e.ao[1] : 0);
+  const bx = b.x + (e.bo ? e.bo[0] : 0), by = b.y + (e.bo ? e.bo[1] : 0);
+  const mx = (ax + bx)/2, my = (ay + by)/2;
+  const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy);
+  const bend = e.bend || 0;
+  const cx = mx - dy/L*bend, cy = my + dx/L*bend;
+  const p0 = edgePoint(a, ax, ay, cx - ax, cy - ay), p2 = edgePoint(b, bx, by, cx - bx, cy - by);
+  const g = el('g', { class: 'edge', tabindex: 0, role: 'button', 'aria-label': e.name }, edgeLayer);
+  el('path', { d: `M${p0[0]},${p0[1]} Q${cx},${cy} ${p2[0]},${p2[1]}`, class: 'k-' + e.kind, 'marker-end': `url(#ar-${e.kind})`, ...(e.both ? { 'marker-start': `url(#ar-${e.kind})` } : {}) }, g);
+  // label
+  const lx = 0.25*p0[0] + 0.5*cx + 0.25*p2[0] + (e.lo ? e.lo[0] : 0);
+  const ly = 0.25*p0[1] + 0.5*cy + 0.25*p2[1] + (e.lo ? e.lo[1] : 0);
+  const lab = el('g', { class: 'lab' }, g);
+  const txt = e.short || e.name;
+  const lw = txt.length * 7.1 + 18;
+  el('rect', { x: lx - lw/2, y: ly - 12, width: lw, height: 24, rx: 12, class: 'k-' + e.kind }, lab);
+  const t = el('text', { x: lx, y: ly + 4.5, 'text-anchor': 'middle', class: 'c-' + e.kind }, lab); t.textContent = txt;
+  // move label group to label layer, but keep the same handlers
+  const lg = el('g', { class: 'edge', 'data-i': i }, labelLayer); lg.appendChild(lab);
+  [g, lg].forEach(x => x.addEventListener('click', () => go(e.step)));
+  g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(e.step); } });
+  edgeEls.push({ e, els: [g, lg] });
+});
+
+// ---------- Story ----------
+const story = D.story;
+let cur = 0;
+$('steps').innerHTML = story.map((s, i) => {
+  const kind = D.edges.find(e => e.step === i)?.kind || 'bio';
+  return `<li data-i="${i}"><div class="n c-${kind}"><i class="bg-${kind}"></i>Trin ${i+1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.who ? `<p class="who">${s.who}</p>` : ''}</li>`;
+}).join('');
+document.querySelectorAll('#steps li').forEach(li => li.addEventListener('click', () => { go(+li.dataset.i); $('svg').scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur+1} af ${story.length}`;
+  $('st-title').innerHTML = s.title;
+  $('st-text').innerHTML = s.text;
+  $('st-who').innerHTML = s.who || '';
+  svg.classList.add('dim');
+  edgeEls.forEach(({ e, els }) => els.forEach(x => x.classList.toggle('on', e.step === cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1);
+$('next').onclick = () => go(cur + 1);
+go(0);
+
+// ---------- Facts, extra, remember, quiz ----------
+if (D.facts && D.facts.length) $('facts').innerHTML = D.facts.map(f => {
+  let vis = '';
+  if (f.bars) { const max = Math.max(...f.bars.map(b => b.v)); vis = `<div class="bars">${f.bars.map(b => `<div class="bar"><span>${b.l}</span><div class="track" role="img" aria-label="${b.l}"><div class="fill${b.alt ? ' alt' : ''}" style="width:${b.v / max * 100}%"></div></div></div>`).join('')}</div>`; }
+  return `<div class="fact"><div class="v">${f.v}</div><div class="d">${f.d}</div>${vis}<div class="src">${f.src}</div></div>`;
+}).join('');
+else $('facts-sec').hidden = true;
+$('extra').innerHTML = D.extra.map(x => `<div><h2>${x.h}</h2>${x.body}</div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi+1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a;
+    b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  }));
+});
+$('note').innerHTML = D.note;
+const P = ['Lager', 'Planter', 'Dyr', 'Dødt materiale', 'Nedbrydere'];
+$('pattern').innerHTML = P.map((x, i) => `<span class="p${i === 0 ? ' store' : ''}">${i === 0 ? D.store : x}</span>`).join('<span class="ar">→</span>') + `<span class="ar">→ tilbage til</span><span class="p store">${D.store}</span>`;
+$('special').innerHTML = `<b>Det særlige her:</b> ${D.special}`;
+</script>
+
+</body>
+</html>

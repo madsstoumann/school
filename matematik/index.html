@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Differentialregning i billeder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<style>
+/* Layout: et rejsekort i tre etaper. Hvert emne er et kort med sin egen lille graf-tegning. Ekstra luft mellem etaperne. */
+.wrap { gap: 72px; }
+.hero { display: grid; gap: 14px; }
+.hero svg { width: 100%; max-width: 640px; height: auto; }
+.leg { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: .95rem; }
+.leg span { display: inline-flex; align-items: center; gap: 8px; }
+.leg i { width: 26px; height: 6px; border-radius: 3px; display: inline-block; }
+.stage { display: grid; gap: 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+a.card {
+  display: grid; gap: 10px; align-content: start; padding: 20px; border-radius: 18px; background: var(--paper);
+  border: 1.5px solid var(--line); color: inherit; text-decoration: none; transition: transform .15s, border-color .15s;
+}
+a.card:hover { transform: translateY(-3px); border-color: var(--t); }
+a.card svg { width: 100%; height: 86px; }
+a.card .no { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--t); }
+a.card h3 { font-size: 1.35rem; }
+a.card p { color: var(--muted); }
+.how { font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <a class="back" href="../">← Forside</a>
+    <h1>Differentialregning i billeder</h1>
+    <p class="lede">Hele emnet handler om ét spørgsmål: <span class="ct">hvor stejl er grafen lige her?</span> Træk, skub og zoom dig frem til svaret.</p>
+    <svg viewBox="0 0 640 170" aria-hidden="true">
+      <path d="M10 150 C120 150 160 40 260 40 S400 140 470 120 S580 30 630 20" fill="none" stroke="var(--f)" stroke-width="5" stroke-linecap="round"/>
+      <line x1="190" y1="72" x2="330" y2="16" stroke="var(--t)" stroke-width="4" stroke-linecap="round" transform="rotate(22 260 40)"/>
+      <circle cx="260" cy="40" r="9" fill="var(--paper)" stroke="var(--t)" stroke-width="4"/>
+    </svg>
+    <div class="leg">
+      <span><i style="background: var(--f)"></i>Grafen</span>
+      <span><i style="background: var(--t)"></i>Hældning / tangent</span>
+      <span><i style="background: var(--up)"></i>Op ad bakke</span>
+      <span><i style="background: var(--down)"></i>Ned ad bakke</span>
+      <span><i style="background: var(--flat)"></i>Fladt: top eller bund</span>
+    </div>
+  </header>
+  <div id="stages" style="display: grid; gap: 72px;"></div>
+  <p class="how">Farverne betyder det samme på alle sider. Siderne er lavet til at blive læst i rækkefølge, men hver kan også stå alene.</p>
+</div>
+
+<script>
+// Tilføj nye emner her: { stage, no, file, title, text, icon }
+const ICONS = {
+  ide: '<path d="M10 75 C60 75 80 20 130 20 S200 40 250 10" fill="none" stroke="var(--f)" stroke-width="4"/><line x1="90" y1="62" x2="170" y2="-2" stroke="var(--t)" stroke-width="4" stroke-linecap="round"/><circle cx="130" cy="30" r="6" fill="var(--paper)" stroke="var(--t)" stroke-width="3"/>',
+  haeld: '<line x1="30" y1="78" x2="230" y2="8" stroke="var(--up)" stroke-width="5" stroke-linecap="round"/><path d="M90 57 H150 V36" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="5 4"/>',
+  tang: '<path d="M10 80 Q130 -30 250 80" fill="none" stroke="var(--f)" stroke-width="4"/><line x1="40" y1="56" x2="210" y2="70" stroke="var(--t)" stroke-width="3" stroke-dasharray="7 5"/><line x1="20" y1="52" x2="140" y2="8" stroke="var(--t)" stroke-width="4" stroke-linecap="round"/>',
+  afl: '<path d="M10 70 Q130 -20 250 70" fill="none" stroke="var(--f)" stroke-width="4"/><line x1="10" y1="80" x2="250" y2="80" stroke="var(--grid-strong)" stroke-width="2"/><line x1="10" y1="40" x2="250" y2="86" stroke="var(--t)" stroke-width="4" opacity=".8"/>',
+  mono: '<path d="M10 70 C50 0 90 0 130 45 S210 90 250 10" fill="none" stroke="var(--f)" stroke-width="4"/><circle cx="70" cy="18" r="6" fill="var(--flat)"/><circle cx="185" cy="62" r="6" fill="var(--flat)"/><rect x="10" y="80" width="58" height="8" rx="4" fill="var(--up)"/><rect x="72" y="80" width="110" height="8" rx="4" fill="var(--down)"/><rect x="186" y="80" width="64" height="8" rx="4" fill="var(--up)"/>',
+  regn: '<text x="40" y="62" style="font-family: var(--font-display); font-weight: 800; font-size: 44px; fill: var(--f)">x</text><text x="68" y="36" style="font-family: var(--font-display); font-weight: 800; font-size: 26px; fill: var(--t)">3</text><path d="M100 40 h40" stroke="var(--muted)" stroke-width="3"/><path d="M132 32 l10 8 -10 8" fill="none" stroke="var(--muted)" stroke-width="3"/><text x="155" y="62" style="font-family: var(--font-display); font-weight: 800; font-size: 44px"><tspan style="fill: var(--t)">3</tspan><tspan style="fill: var(--f)">x</tspan></text><text x="210" y="36" style="font-family: var(--font-display); font-weight: 800; font-size: 26px; fill: var(--t)">2</text>',
+  hverdag: '<rect x="20" y="15" width="70" height="70" rx="4" fill="var(--up-soft)" stroke="var(--t)" stroke-width="3" stroke-dasharray="7 4"/><path d="M120 85 Q185 -20 250 85" fill="none" stroke="var(--f)" stroke-width="4"/><line x1="150" y1="33" x2="220" y2="33" stroke="var(--flat)" stroke-width="4" stroke-linecap="round"/>',
+};
+const TOPICS = [
+  { stage: 'Grundideen', no: 1, file: 'ide.html', title: 'Den store idé', text: 'En cykeltur, et speedometer og en graf. Hurtigt betyder stejlt.', icon: 'ide' },
+  { stage: 'Grundideen', no: 2, file: 'haeldning.html', title: 'Hældning', text: 'Ét skridt hen, hvor meget op? Skibakker, tage og vejskilte.', icon: 'haeld' },
+  { stage: 'Grundideen', no: 3, file: 'tangent.html', title: 'Fra to punkter til ét', text: 'Sekant, tangent og grænseværdi. Zoom ind, til kurven bliver lige.', icon: 'tang' },
+  { stage: 'Værktøjet', no: 4, file: 'afledt.html', title: "Hældningsmåleren f'", text: 'Kør tangenten hen ad grafen, og se en ny graf vokse frem.', icon: 'afl' },
+  { stage: 'Værktøjet', no: 5, file: 'monotoni.html', title: 'Op, ned, top og bund', text: 'Rutsjebanen, fortegnslinjen og opskriften på toppe og bunde.', icon: 'mono' },
+  { stage: 'Værktøjet', no: 6, file: 'regneregler.html', title: 'Mønstrene', text: 'Hop-ned-reglen og hvorfor et kvadrat forklarer x² → 2x.', icon: 'regn' },
+  { stage: 'Brug det', no: 7, file: 'hverdag.html', title: 'I hverdagen', text: 'Den største fårefold, kaffe der køler, og meget mere.', icon: 'hverdag' },
+];
+const groups = {};
+TOPICS.forEach((t) => (groups[t.stage] ||= []).push(t));
+document.getElementById('stages').innerHTML = Object.entries(groups).map(([st, list], i) => `
+  <section class="stage">
+    <div class="eyebrow">Etape ${i + 1}</div>
+    <h2>${st}</h2>
+    <div class="grid">${list.map((t) => `
+      <a class="card" href="${t.file}">
+        <svg viewBox="0 0 260 92" aria-hidden="true">${ICONS[t.icon]}</svg>
+        <div class="no">Emne ${t.no}</div>
+        <h3>${t.title}</h3>
+        <p>${t.text}</p>
+      </a>`).join('')}
+    </div>
+  </section>`).join('');
+</script>
+</body>
+</html>

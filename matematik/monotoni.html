@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Op, ned, top og bund</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 5 af 7</div>
+    <h1>Op, ned, top og bund</h1>
+    <p class="lede">Nu bliver hældningsmåleren nyttig. Den kan fortælle, hvor en graf stiger, hvor den falder, og præcis hvor toppene og bundene sidder. Uden at vi skal tegne hele grafen.</p>
+  </header>
+
+  <section>
+    <h2>Rutsjebanen</h2>
+    <p>Grafen er farvet efter hældningen. Under den ligger en <b>fortegnslinje</b>: et bånd, der kun viser farverne. Tryk på Kør og følg vognen.</p>
+    <div class="lab">
+      <svg id="plot" aria-label="Rutsjebane-graf farvet efter hældning"></svg>
+      <svg id="strip" aria-label="Fortegnslinje" style="border-top: 1px solid var(--line)"></svg>
+      <div class="controls">
+        <label class="slider" for="x">Vogn <input id="x" type="range" min="0" max="7" step="0.02" value="0.6"></label>
+        <button id="play" type="button">▶ Kør</button>
+      </div>
+      <div class="readout"><b id="state"></b></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Fortegnslinjen læses som et kort</h2>
+    <div class="cards">
+      <div class="pcard up">
+        <svg viewBox="0 0 200 60"><rect x="10" y="20" width="180" height="22" rx="11" fill="var(--up)"/><text x="100" y="36" text-anchor="middle" style="fill: var(--paper); font-weight: 700">+ ↗</text></svg>
+        <h3>Grøn med plus</h3><p>f' er over nul. Grafen <b>vokser</b>.</p>
+      </div>
+      <div class="pcard down">
+        <svg viewBox="0 0 200 60"><rect x="10" y="20" width="180" height="22" rx="11" fill="var(--down)"/><text x="100" y="36" text-anchor="middle" style="fill: var(--paper); font-weight: 700">− ↘</text></svg>
+        <h3>Rød med minus</h3><p>f' er under nul. Grafen <b>aftager</b>.</p>
+      </div>
+      <div class="pcard flat">
+        <svg viewBox="0 0 200 60"><rect x="10" y="20" width="85" height="22" rx="11" fill="var(--up)"/><rect x="105" y="20" width="85" height="22" rx="11" fill="var(--down)"/><circle cx="100" cy="31" r="10" fill="var(--flat)"/></svg>
+        <h3>Lilla prik</h3><p>f' er nul. Her skifter farven måske, og så er der top eller bund.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Opskriften på at finde toppe og bunde</h2>
+    <div class="cards">
+      <div class="pcard flat"><h3>1. Find de flade steder</h3><p>Hvor er hældningen nul? Dér sætter du lilla prikker.</p></div>
+      <div class="pcard"><h3>2. Mal båndet</h3><p>Se om grafen går op eller ned mellem prikkerne. Grøn eller rød.</p></div>
+      <div class="pcard"><h3>3. Læs farveskiftet</h3><p>Farverne omkring hver prik afslører, hvad der sker.</p></div>
+    </div>
+    <div class="cards">
+      <div class="pcard">
+        <svg viewBox="0 0 200 110"><path d="M20 90 Q100 -20 180 90" fill="none" stroke="var(--f)" stroke-width="4"/><circle cx="100" cy="35" r="7" fill="var(--flat)"/><rect x="20" y="96" width="76" height="10" rx="5" fill="var(--up)"/><rect x="104" y="96" width="76" height="10" rx="5" fill="var(--down)"/></svg>
+        <h3>Grøn → rød = top</h3><p>Op, op, op ... og så ned. Du stod på toppen. Kaldes et <b>maksimum</b>.</p>
+      </div>
+      <div class="pcard">
+        <svg viewBox="0 0 200 110"><path d="M20 10 Q100 120 180 10" fill="none" stroke="var(--f)" stroke-width="4"/><circle cx="100" cy="65" r="7" fill="var(--flat)"/><rect x="20" y="96" width="76" height="10" rx="5" fill="var(--down)"/><rect x="104" y="96" width="76" height="10" rx="5" fill="var(--up)"/></svg>
+        <h3>Rød → grøn = bund</h3><p>Ned, ned ... og så op igen. Du var i dalen. Kaldes et <b>minimum</b>.</p>
+      </div>
+      <div class="pcard">
+        <svg viewBox="0 0 200 110"><path d="M20 85 C70 40 80 50 100 50 C120 50 130 60 180 10" fill="none" stroke="var(--f)" stroke-width="4"/><circle cx="100" cy="50" r="7" fill="var(--flat)"/><rect x="20" y="96" width="76" height="10" rx="5" fill="var(--up)"/><rect x="104" y="96" width="76" height="10" rx="5" fill="var(--up)"/></svg>
+        <h3>Samme farve = terrasse</h3><p>Grafen tager en pust på en flad hylde og fortsætter samme vej. Ingen top, ingen bund.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Prøv dig selv</h2>
+    <div class="quiz" data-quiz='[
+      {"q":"Fortegnslinjen er rød, så lilla prik, så grøn. Hvad er der ved prikken?","o":["Top","Bund","Terrasse"],"a":1,"why":"Ned og så op igen: det er bunden af en dal."},
+      {"q":"Hvad betyder det, at grafen vokser?","o":["Den går op mod højre","Den bliver bredere","Den går ned mod højre"],"a":0,"why":"Vokser betyder stiger, når man læser fra venstre mod højre. Grøn farve."}
+    ]'></div>
+  </section>
+
+  <nav class="nextnav"><a href="afledt.html">← Hældningsmåleren</a><a href="regneregler.html">Næste: Mønstrene →</a></nav>
+</div>
+
+<script>
+const f = (x) => 0.2 * (x - 1) * (x - 3.4) * (x - 5.8) + 4;
+const df = (x) => 0.2 * (3 * x * x - 20.4 * x + 28.92);
+const r1 = (20.4 - Math.sqrt(20.4 ** 2 - 12 * 28.92)) / 6, r2 = (20.4 + Math.sqrt(20.4 ** 2 - 12 * 28.92)) / 6;
+const P = new Plot(document.getElementById('plot'), { w: 700, h: 360, x0: 0, x1: 7, y0: 0, y1: 9.5, xlabel: 'x →' });
+P.curve(f, 'g-f', 0, r1).style.stroke = 'var(--up)';
+P.curve(f, 'g-f', r1, r2).style.stroke = 'var(--down)';
+P.curve(f, 'g-f', r2, 7).style.stroke = 'var(--up)';
+[[r1, 'TOP'], [r2, 'BUND']].forEach(([r, t]) => {
+  const c = el('circle', { r: 8, fill: 'var(--flat)' }, P.bg); P.place(c, r, f(r));
+  el('text', { x: P.sx(r), y: P.sy(f(r)) + (t === 'TOP' ? -18 : 30), 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--flat)', text: t }, P.bg);
+});
+const cart = el('g', {}, P.top);
+el('rect', { x: -14, y: -22, width: 28, height: 16, rx: 4, fill: 'var(--f)' }, cart);
+el('circle', { cx: -8, cy: -4, r: 4, fill: 'var(--fg)' }, cart);
+el('circle', { cx: 8, cy: -4, r: 4, fill: 'var(--fg)' }, cart);
+
+// fortegnslinje med samme x-skala
+const st = document.getElementById('strip'); st.setAttribute('viewBox', '0 0 700 90');
+const seg = (a, b, col, txt) => {
+  el('rect', { x: P.sx(a) + 3, y: 30, width: P.sx(b) - P.sx(a) - 6, height: 26, rx: 13, fill: col }, st);
+  el('text', { x: (P.sx(a) + P.sx(b)) / 2, y: 48, 'text-anchor': 'middle', class: 'g-tag', style: 'fill: var(--paper)', text: txt }, st);
+};
+el('text', { x: P.sx(7), y: 18, 'text-anchor': 'end', class: 'g-ax-label', text: "fortegn for f'" }, st);
+seg(0, r1, 'var(--up)', '+  ↗  vokser'); seg(r1, r2, 'var(--down)', '−  ↘  aftager'); seg(r2, 7, 'var(--up)', '+  ↗  vokser');
+[[r1, 'top'], [r2, 'bund']].forEach(([r, t]) => {
+  el('circle', { cx: P.sx(r), cy: 43, r: 11, fill: 'var(--flat)', stroke: 'var(--paper)', 'stroke-width': 3 }, st);
+  el('text', { x: P.sx(r), y: 80, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--flat)', text: '0 · ' + t }, st);
+});
+const marker = el('path', { d: 'M0 0 l-8 -12 h16 z', fill: 'var(--fg)' }, st);
+
+const inp = document.getElementById('x');
+function draw() {
+  const x = +inp.value, y = f(x), m = df(x);
+  const ang = -Math.atan2(P.sy(y + m * .01) - P.sy(y), P.sx(x + .01) - P.sx(x)) * 180 / Math.PI;
+  cart.setAttribute('transform', `translate(${P.sx(x)} ${P.sy(y)}) rotate(${-ang})`);
+  marker.setAttribute('transform', `translate(${P.sx(x)} 30)`);
+  const near = Math.min(Math.abs(x - r1), Math.abs(x - r2)) < 0.08;
+  document.getElementById('state').innerHTML = near ? (Math.abs(x - r1) < 0.08 ? '<span class="cl">Toppen!</span> Vognen står helt vandret et øjeblik. Hældningen er nul.' : '<span class="cl">Bunden!</span> Vandret et øjeblik, og så går det opad igen.')
+    : m > 0 ? '<span class="cu">Op ad bakke.</span> Hældningen er plus, båndet er grønt.' : '<span class="cd">Ned ad bakke.</span> Hældningen er minus, båndet er rødt.';
+}
+inp.addEventListener('input', draw);
+P.drag(P.svg, (x) => { inp.value = clamp(x, 0, 7); draw(); });
+let raf = null;
+document.getElementById('play').onclick = () => {
+  if (raf) { cancelAnimationFrame(raf); raf = null; return; }
+  if (+inp.value >= 6.9) inp.value = 0;
+  const step = () => { const x = +inp.value; inp.value = x + 0.012 + 0.012 * Math.min(1, Math.abs(df(x)) / 2); draw(); raf = +inp.value < 7 ? requestAnimationFrame(step) : null; };
+  raf = requestAnimationFrame(step);
+};
+draw();
+</script>
+</body>
+</html>

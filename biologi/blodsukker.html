@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blodsukker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: kort over de fire bidder øverst, derefter én stor tegning, der bygges op trin for trin, og en fortæller-boks under den. */
+:root {
+  --bg: #f2f5f3; --surface: #ffffff; --fg: #17211c; --muted: #56645c; --line: #d5ded8;
+  --accent: #3d7f2e; --accent-soft: #e3f0dc;
+  --leaf: #4f9a3a; --leaf-soft: #cfe6c4; --sun: #e0a100; --sun-soft: #fbedc4;
+  --water: #2f7fc1; --water-soft: #d6e8f6; --hplus: #d0582a; --electron: #7b4bc4;
+  --carbon: #26302b; --air: #c2412f; --membrane: #b9d3a8; --stroma: #eef6e7; --lumen: #fbeee4;
+  --node: #ffffff; --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --accent: #8fd67a; --accent-soft: #1e2f1a;
+    --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+    --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+    --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --accent: #8fd67a; --accent-soft: #1e2f1a;
+  --leaf: #7cc766; --leaf-soft: #22391c; --sun: #f5c542; --sun-soft: #3a3115; --water: #6fb3ea; --water-soft: #15293a;
+  --hplus: #ff8f63; --electron: #b896f2; --carbon: #e6ede8; --air: #ff7d6b; --membrane: #3c5530; --stroma: #172315; --lumen: #2e2118;
+  --node: #1e2924; --node-line: #3d4e45; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; } h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+
+/* Kort over bidderne */
+.map { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.map a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--muted); text-decoration: none; font-size: .9rem; min-width: 0; }
+.map a b { font-family: var(--font-display); color: var(--fg); font-size: 1rem; }
+.map a.here { border-color: var(--accent); background: var(--accent-soft); }
+.map a.here b { color: var(--accent); }
+.map a:hover { border-color: var(--accent); }
+@media (max-width: 620px) { .map { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.fact { border-left: 4px solid var(--accent); padding-left: 14px; display: grid; gap: 6px; }
+.fact .v { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--accent); }
+.fact .src { font-size: .8rem; color: var(--muted); }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 8em 1fr; gap: 10px; align-items: center; font-size: .9rem; }
+.bar .track { height: 14px; border-radius: 7px; background: var(--accent-soft); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; background: var(--accent); }
+
+/* Tegning */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: var(--font-body); fill: var(--fg); font-size: 14px; }
+svg .t { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 700; }
+[data-s] { transition: opacity .3s; }
+.dim [data-s]:not(.on) { opacity: .22; }
+.on .glow, .on.glow { filter: drop-shadow(0 0 6px var(--sun)); }
+.flow { stroke-dasharray: 8 7; }
+.on .flow, .on.flow { animation: flow .9s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -30; } }
+.spin { transform-box: fill-box; transform-origin: center; }
+.on .spin { animation: spin 4s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hint { font-size: .88rem; color: var(--muted); padding: 10px 18px 0; }
+.story { display: grid; gap: 12px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); margin-top: 12px; }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story p { max-width: 70ch; }
+.story .img { font-style: italic; color: var(--muted); }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dots button { width: 14px; height: 14px; padding: 0; border-radius: 50%; border: 1.5px solid var(--accent); background: var(--surface); }
+.dots button.on { background: var(--accent); }
+
+.section { display: grid; gap: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; color: var(--accent); }
+.steps .img { font-size: .92rem; color: var(--muted); font-style: italic; }
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 24px; }
+.words div { display: grid; gap: 2px; border-left: 4px solid var(--accent); padding-left: 12px; }
+.words b { font-family: var(--font-display); }
+.words span { color: var(--muted); font-size: .95rem; }
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.q button.wrong { background: var(--hplus); border-color: var(--hplus); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <nav class="map" id="map" aria-label="Emner i serien"></nav>
+
+  <section class="card" aria-label="Tegning">
+    <p class="hint">Tryk Næste for at bygge tegningen op, eller tryk direkte på noget i tegningen.</p>
+    <div class="scroll"><svg viewBox="0 0 820 490" role="img" aria-label="Regulering af blodsukkeret med insulin og glukagon som en løkke"><defs>
+<marker id="m-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+<marker id="m-sun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--sun)"/></marker>
+<marker id="m-water" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--water)"/></marker>
+<marker id="m-leaf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--leaf)"/></marker>
+<marker id="m-air" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--air)"/></marker>
+<marker id="m-e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--electron)"/></marker>
+<marker id="m-h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--hplus)"/></marker>
+<marker id="m-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker>
+<marker id="m-fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fg)"/></marker>
+</defs>
+<g data-s="1,2,6"><rect x="280.0" y="18.0" width="260" height="44" rx="22.0" style="fill:var(--sun-soft);stroke:var(--hplus);stroke-width:2"/><text x="410" y="45" text-anchor="middle" class="b">Højt blodsukker</text><text x="410" y="82" text-anchor="middle" class="small">efter et måltid</text></g>
+<g data-s="4,5,6"><rect x="280.0" y="408.0" width="260" height="44" rx="22.0" style="fill:var(--water-soft);stroke:var(--water);stroke-width:2"/><text x="410" y="435" text-anchor="middle" class="b">Lavt blodsukker</text><text x="410" y="478" text-anchor="middle" class="small">efter lang tid uden mad</text></g>
+<g data-s="2,6"><rect x="560" y="110" width="230" height="56" rx="12" style="fill:var(--surface);stroke:var(--node-line);stroke-width:1.5"/><text x="675" y="135" text-anchor="middle" class="b">Bugspytkirtlen</text><text x="675" y="153" text-anchor="middle" class="small">β-celler</text></g>
+<g data-s="2,3,6"><rect x="600.0" y="200.0" width="150" height="40" rx="20.0" style="fill:var(--sun);stroke:var(--hplus);stroke-width:2"/><text x="675" y="225" text-anchor="middle" class="b">Insulin</text></g>
+<g data-s="3,6"><rect x="560" y="270" width="230" height="70" rx="12" style="fill:var(--surface);stroke:var(--node-line);stroke-width:1.5"/><text x="675" y="296" text-anchor="middle" class="b">Celler optager glukose</text><text x="675" y="316" text-anchor="middle" class="small">leveren gemmer glykogen</text></g>
+<g data-s="2,3,6"><path d="M540,50 Q640,60 670,105" style="fill:none;stroke:var(--hplus);stroke-width:3" marker-end="url(#m-h)"/><path d="M675,168 L675,196" style="fill:none;stroke:var(--hplus);stroke-width:3" marker-end="url(#m-h)"/><path d="M675,242 L675,266" style="fill:none;stroke:var(--hplus);stroke-width:3" marker-end="url(#m-h)"/><path d="M675,345 Q660,420 545,430" style="fill:none;stroke:var(--hplus);stroke-width:3" class="flow" marker-end="url(#m-h)"/><text x="720" y="400" text-anchor="start" class="small b">blodsukker falder</text></g>
+<g data-s="5,6"><rect x="30" y="300" width="230" height="56" rx="12" style="fill:var(--surface);stroke:var(--node-line);stroke-width:1.5"/><text x="145" y="325" text-anchor="middle" class="b">Bugspytkirtlen</text><text x="145" y="343" text-anchor="middle" class="small">α-celler</text></g>
+<g data-s="5,6"><rect x="70.0" y="220.0" width="150" height="40" rx="20.0" style="fill:var(--water-soft);stroke:var(--water);stroke-width:2"/><text x="145" y="245" text-anchor="middle" class="b">Glukagon</text></g>
+<g data-s="5,6"><rect x="30" y="120" width="230" height="70" rx="12" style="fill:var(--surface);stroke:var(--node-line);stroke-width:1.5"/><text x="145" y="147" text-anchor="middle" class="b">Leveren nedbryder</text><text x="145" y="167" text-anchor="middle" class="small">glykogen til glukose</text></g>
+<g data-s="5,6"><path d="M280,430 Q170,420 150,362" style="fill:none;stroke:var(--water);stroke-width:3" marker-end="url(#m-water)"/><path d="M145,296 L145,264" style="fill:none;stroke:var(--water);stroke-width:3" marker-end="url(#m-water)"/><path d="M145,218 L145,194" style="fill:none;stroke:var(--water);stroke-width:3" marker-end="url(#m-water)"/><path d="M150,115 Q170,45 275,40" style="fill:none;stroke:var(--water);stroke-width:3" class="flow" marker-end="url(#m-water)"/><text x="40" y="80" text-anchor="start" class="small b">blodsukker stiger</text></g>
+<g data-s="0,1,4,6"><rect x="385" y="130" width="50" height="230" rx="25" style="fill:var(--surface);stroke:var(--fg);stroke-width:2"/>
+<rect x="391" y="215" width="38" height="139" rx="19" style="fill:var(--hplus);opacity:.7"/>
+<circle cx="401" cy="235" r="4" style="fill:var(--surface)"/>
+<circle cx="419" cy="255" r="4" style="fill:var(--surface)"/>
+<circle cx="401" cy="275" r="4" style="fill:var(--surface)"/>
+<circle cx="419" cy="295" r="4" style="fill:var(--surface)"/>
+<circle cx="401" cy="315" r="4" style="fill:var(--surface)"/>
+<circle cx="419" cy="335" r="4" style="fill:var(--surface)"/>
+<path d="M370,215 L450,215" style="stroke:var(--leaf);stroke-width:3;stroke-dasharray:6 4"/><text x="460" y="220" text-anchor="start" class="small b" style="fill:var(--leaf)">normalt</text><text x="410" y="380" text-anchor="middle" class="small b">sukker i blodet</text></g>
+</svg></div>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div><div class="count" id="count"></div><h3 id="st-title"></h3></div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="img" id="st-img"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Alle trin på én gang</h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section" id="facts-sec">
+    <h2>Set i bogen</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="section">
+    <h2>Ord, du møder</h2>
+    <div class="words" id="words"></div>
+  </section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+<script>
+const D = {"title": "Blodsukker", "lede": "Hjernen og musklerne skal have en jævn strøm af glukose. Derfor holder kroppen blodsukkeret på et stabilt niveau med to hormoner, der arbejder imod hinanden.", "story": [{"title": "Et stabilt niveau", "text": "Der skal være tilpas meget glukose i blodet. For lidt, og hjernen løber tør. For meget, og det skader blodkar og organer.", "img": "Som at holde vandstanden i en sø."}, {"title": "Efter et måltid", "text": "Når du har spist, bliver kulhydraterne til glukose, som går ud i blodet. Blodsukkeret stiger.", "img": "Vandstanden stiger."}, {"title": "Insulin bliver sendt ud", "text": "β-cellerne i bugspytkirtlens Langerhanske øer opdager det høje blodsukker og sender hormonet insulin ud i blodet.", "img": "Insulin er nøglen, der åbner cellerne."}, {"title": "Glukose ind i cellerne", "text": "Insulin får cellerne til at optage glukose og leveren og musklerne til at gemme den som glykogen. Blodsukkeret falder.", "img": "Overskuddet sættes på lager."}, {"title": "Lang tid uden mad", "text": "Kroppen bruger løbende glukose. Efter nogle timer uden mad falder blodsukkeret.", "img": "Vandstanden falder."}, {"title": "Glukagon henter fra lageret", "text": "α-cellerne sender hormonet glukagon ud. Det får leveren til at nedbryde glykogen til glukose, som sendes ud i blodet. Blodsukkeret stiger igen.", "img": "Lageret åbnes."}, {"title": "Negativ feedback", "text": "Systemet retter sig selv: højt giver insulin, som sænker. Lavt giver glukagon, som hæver. Det hedder negativ feedback, og du møder det igen under hormoner.", "img": "En termostat for sukker."}], "words": [["Insulin", "Hormon, der sænker blodsukkeret."], ["Glukagon", "Hormon, der hæver blodsukkeret."], ["Langerhanske øer", "Celleklynger i bugspytkirtlen, der laver insulin og glukagon."], ["Negativ feedback", "Når et system modvirker en ændring og vender tilbage til normalen."]], "remember": ["<b>Insulin sænker, glukagon hæver.</b>", "<b>β laver insulin, α laver glukagon.</b>", "<b>Leveren er sukkerbanken:</b> sætter ind som glykogen og hæver igen."], "quiz": [{"q": "Hvad sker der lige efter et måltid?", "o": ["Insulin sendes ud", "Glukagon sendes ud", "Ingenting"], "a": 0, "why": "Højt blodsukker får β-cellerne til at sende insulin ud."}, {"q": "Hvor gemmer kroppen glukose som glykogen?", "o": ["I lever og muskler", "I knoglerne", "I hjernen"], "a": 0, "why": "Leveren og musklerne er kroppens sukkerlager."}], "note": "Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 31 (regulering af blodsukkerniveauet).", "no": 3, "series": {"name": "Energi til arbejdet", "items": [["muskler.html", "Muskler", "Reb, der kun kan trække"], ["kulhydrater.html", "Kulhydrater", "Sukker som perler"], ["blodsukker.html", "Blodsukker", "Insulin og glukagon"], ["fordoejelsen.html", "Fordøjelsen", "Madens metrolinje"], ["glykaemisk-indeks.html", "Glykæmisk indeks", "Raket eller cykel"], ["fedt.html", "Fedt", "Lige eller knækket"], ["respiration-overblik.html", "Respiration", "Fotosyntesen baglæns"], ["glykolyse.html", "Glykolyse", "Sukker klippes over"], ["citronsyrecyklus.html", "Citronsyrecyklus", "Karrusellen igen"], ["elektrontransportkaeden.html", "Elektrontransportkæden", "Samme maskine, nyt sted"]]}, "facts": []};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title; $('lede').innerHTML = D.lede;
+const MAP = D.series.items;
+$('eyebrow').textContent = `${D.series.name} · ${D.no} af ${MAP.length}`;
+$('map').innerHTML = MAP.map(([f, t, s], i) => `<a href="${f}" class="${i + 1 === D.no ? 'here' : ''}"${i + 1 === D.no ? ' aria-current="page"' : ''}><b>${i + 1}. ${t}</b>${s}</a>`).join('');
+const svg = document.querySelector('.scroll svg');
+const story = D.story; let cur = 0;
+$('dots').innerHTML = story.map((s, i) => `<button type="button" aria-label="Trin ${i + 1}" data-i="${i}"></button>`).join('');
+$('dots').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$('steps').innerHTML = story.map((s, i) => `<li data-i="${i}"><div class="n">Trin ${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.img ? `<p class="img">${s.img}</p>` : ''}</li>`).join('');
+document.querySelectorAll('#steps li').forEach(li => li.onclick = () => { go(+li.dataset.i); svg.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+svg.querySelectorAll('[data-s]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => { const s = el.dataset.s.split(',').map(Number); go(s.includes(cur) ? s[(s.indexOf(cur) + 1) % s.length] : s[0]); });
+});
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur + 1} af ${story.length}`;
+  $('st-title').innerHTML = s.title; $('st-text').innerHTML = s.text; $('st-img').innerHTML = s.img || '';
+  svg.classList.add('dim');
+  svg.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('on', el.dataset.s.split(',').map(Number).includes(cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+  $('dots').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1); $('next').onclick = () => go(cur + 1);
+go(0);
+$('words').innerHTML = D.words.map(([w, d]) => `<div><b>${w}</b><span>${d}</span></div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi + 1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.onclick = () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a; b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  });
+});
+$('note').innerHTML = D.note;
+if (D.facts && D.facts.length) {
+  $('facts').innerHTML = D.facts.map(f => {
+    let vis = '';
+    if (f.bars) { const max = Math.max(...f.bars.map(b => b.v)); vis = `<div class="bars">${f.bars.map(b => `<div class="bar"><span>${b.l}</span><div class="track" role="img" aria-label="${b.l}"><div class="fill" style="width:${Math.max(1, b.v / max * 100)}%"></div></div></div>`).join('')}</div>`; }
+    return `<div class="fact"><div class="v">${f.v}</div><p>${f.d}</p>${vis}<div class="src">${f.src}</div></div>`;
+  }).join('');
+} else $('facts-sec').hidden = true;
+</script>
+</body>
+</html>

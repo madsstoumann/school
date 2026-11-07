@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mønstrene i regnereglerne</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<style>
+.machine { display: grid; justify-items: center; gap: 18px; padding: 28px 18px; position: relative; }
+.expr { font-family: var(--font-display); font-weight: 800; font-size: clamp(3rem, 12vw, 5.5rem); line-height: 1; display: flex; align-items: flex-start; gap: 2px; min-height: 1.2em; }
+.expr .coef { color: var(--t); }
+.expr .base { color: var(--f); }
+.expr sup { font-size: .5em; color: var(--t); margin-top: -.1em; }
+.flyer { position: fixed; font-family: var(--font-display); font-weight: 800; color: var(--t); pointer-events: none; transition: transform .8s cubic-bezier(.5,-0.4,.4,1.4); z-index: 5; }
+.table { display: grid; grid-template-columns: auto auto auto; gap: 8px 18px; align-items: center; justify-content: start; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; }
+.table .arr { color: var(--muted); font-size: 1.1rem; }
+.table sup { font-size: .6em; }
+.table .e { color: var(--t); }
+.table .x { color: var(--f); }
+</style>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 6 af 7</div>
+    <h1>Mønstrene: regnereglerne</h1>
+    <p class="lede">Man behøver ikke tegne tangenter hver gang. Matematikere har fundet nogle faste mønstre. Lær mønstret, og du kan differentiere med et snuptag.</p>
+  </header>
+
+  <section>
+    <h2>Hvorfor bliver x² til 2x?</h2>
+    <p>Tegn et kvadrat. Arealet er <span class="math cf">x²</span>. Lad nu siden vokse en lille smule. Hvor kommer det nye areal fra?</p>
+    <div class="lab">
+      <svg id="sq" viewBox="0 0 520 400" aria-label="Kvadrat der vokser"></svg>
+      <div class="controls">
+        <label class="slider" for="side">Siden x <input id="side" type="range" min="1" max="5" step="0.1" value="3"></label>
+        <label class="slider" for="grow">Lille tilvækst <input id="grow" type="range" min="0.02" max="1" step="0.01" value="0.6"></label>
+      </div>
+      <div class="readout"><b id="sqstate"></b><p>To <span class="ct">orange strimler</span>, hver så lang som siden x. Det giver <span class="math ct">2x</span>. Den <span class="cl">lilla hjørnebid</span> skrumper til ingenting, når tilvæksten kryber mod nul.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Hop-ned-reglen</h2>
+    <p>Se på tabellen. Kan du se mønstret? Det <span class="ct">orange tal</span> hopper ned foran, og der bliver ét mindre tilbage deroppe.</p>
+    <div class="lab">
+      <div class="machine">
+        <div class="seg" id="pick" role="group" aria-label="Vælg potens"></div>
+        <div class="expr" id="expr" aria-live="polite"></div>
+        <button id="go" type="button">Afled ↓</button>
+      </div>
+    </div>
+    <div class="table" id="table"></div>
+  </section>
+
+  <section>
+    <h2>Tre små regler mere</h2>
+    <div class="cards">
+      <div class="pcard flat">
+        <svg viewBox="0 0 200 80"><line x1="10" y1="40" x2="190" y2="40" stroke="var(--flat)" stroke-width="5"/></svg>
+        <h3>Et fast tal → 0</h3>
+        <p>Et tal alene, fx <span class="math">7</span>, er en flad linje. Ingen hældning, altså <span class="math">0</span>.</p>
+      </div>
+      <div class="pcard t">
+        <svg viewBox="0 0 200 80"><path d="M20 75 Q110 70 180 40" fill="none" stroke="var(--f)" stroke-width="3" opacity=".5"/><path d="M20 75 Q110 65 180 5" fill="none" stroke="var(--f)" stroke-width="4"/></svg>
+        <h3>Tallet foran følger med</h3>
+        <p><span class="math">3x²</span> er tre gange så høj, og derfor tre gange så stejl: <span class="math">3 · 2x = 6x</span>.</p>
+      </div>
+      <div class="pcard f">
+        <svg viewBox="0 0 200 80"><rect x="20" y="25" width="60" height="34" rx="6" fill="var(--f-soft)" stroke="var(--f)" stroke-width="3"/><text x="100" y="48" text-anchor="middle" style="font-weight:700">+</text><rect x="120" y="25" width="60" height="34" rx="6" fill="var(--t-soft)" stroke="var(--t)" stroke-width="3"/></svg>
+        <h3>Plus: del for del</h3>
+        <p>Som Lego. Afled hver klods for sig: <span class="math">x² + 3x</span> bliver til <span class="math">2x + 3</span>.</p>
+      </div>
+    </div>
+    <div class="remember">
+      <div class="eyebrow">Husk mønstret</div>
+      <p>Det lille tal <span class="ct">hopper ned foran</span> og <span class="ct">taber én</span> på vejen. Faste tal forsvinder. Resten følger med.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Prøv dig selv</h2>
+    <div class="quiz" data-quiz='[
+      {"q":"Hvad bliver x⁴, når du differentierer?","o":["4x³","x³","4x⁴"],"a":0,"why":"4 hopper ned foran, og der bliver 3 tilbage deroppe."},
+      {"q":"Hvad bliver 5?","o":["5","1","0"],"a":2,"why":"Et fast tal er en flad linje. Flad betyder hældning nul."},
+      {"q":"Hvad bliver x² + 10?","o":["2x + 10","2x","x + 10"],"a":1,"why":"Del for del: x² bliver 2x, og 10 forsvinder."}
+    ]'></div>
+  </section>
+
+  <nav class="nextnav"><a href="monotoni.html">← Op, ned, top og bund</a><a href="hverdag.html">Næste: I hverdagen →</a></nav>
+</div>
+
+<script>
+// kvadratet
+const sq = document.getElementById('sq'), side = document.getElementById('side'), grow = document.getElementById('grow');
+function drawSq() {
+  sq.innerHTML = '';
+  const x = +side.value, d = +grow.value, u = 340 / 6, ox = 60, oy = 370;
+  const r = (a, b, w, h, fill, stroke) => el('rect', { x: ox + a * u, y: oy - (b + h) * u, width: w * u, height: h * u, fill, stroke, 'stroke-width': 2 }, sq);
+  r(0, 0, x, x, 'var(--f-soft)', 'var(--f)');
+  r(x, 0, d, x, 'var(--t)', 'var(--t)');
+  r(0, x, x, d, 'var(--t)', 'var(--t)');
+  r(x, x, d, d, 'var(--flat)', 'var(--flat)');
+  el('text', { x: ox + x * u / 2, y: oy - x * u / 2 + 8, 'text-anchor': 'middle', style: 'font-family: var(--font-display); font-weight: 800; font-size: 30px; fill: var(--f)', text: 'x²' }, sq);
+  el('text', { x: ox + x * u / 2, y: oy + 24, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--f)', text: 'x' }, sq);
+  el('text', { x: ox - 14, y: oy - x * u / 2, 'text-anchor': 'middle', class: 'g-tag', fill: 'var(--f)', text: 'x' }, sq);
+  document.getElementById('sqstate').textContent = d < 0.08 ? 'Hjørnet er næsten væk. Tilbage er kun de to strimler: 2x.' : 'Nyt areal = to strimler + et lille hjørne.';
+}
+side.addEventListener('input', drawSq); grow.addEventListener('input', drawSq); drawSq();
+
+// hop-ned-maskinen
+const SUP = ['⁰', '¹', '²', '³', '⁴', '⁵'];
+let n = 3, derived = false;
+const expr = document.getElementById('expr'), pick = document.getElementById('pick');
+const show = () => {
+  expr.innerHTML = derived
+    ? (n === 1 ? '<span class="coef">1</span>' : `<span class="coef">${n}</span><span class="base">x</span>${n - 1 > 1 ? `<sup>${n - 1}</sup>` : ''}`)
+    : `<span class="base">x</span>${n > 1 ? `<sup id="exp">${n}</sup>` : '<sup id="exp" style="opacity:.35">1</sup>'}`;
+  document.getElementById('go').textContent = derived ? 'Forfra ↺' : 'Afled ↓';
+};
+for (let k = 1; k <= 5; k++) {
+  const b = document.createElement('button'); b.type = 'button'; b.id = 'n' + k; b.innerHTML = 'x' + (k > 1 ? SUP[k] : '');
+  b.setAttribute('aria-pressed', k === n);
+  b.onclick = () => { n = k; derived = false; pick.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); show(); };
+  pick.appendChild(b);
+}
+document.getElementById('go').onclick = () => {
+  if (derived) { derived = false; show(); return; }
+  const exp = document.getElementById('exp'), base = expr.querySelector('.base');
+  const a = exp.getBoundingClientRect(), bb = base.getBoundingClientRect();
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { derived = true; show(); return; }
+  const fl = document.createElement('span'); fl.className = 'flyer'; fl.textContent = n;
+  fl.style.left = a.left + 'px'; fl.style.top = a.top + 'px'; fl.style.fontSize = getComputedStyle(exp).fontSize;
+  document.body.appendChild(fl); exp.style.visibility = 'hidden';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fl.style.transform = `translate(${bb.left - a.left - a.width * 1.3}px, ${bb.top - a.top + bb.height * 0.15}px) scale(2)`;
+  }));
+  setTimeout(() => { fl.remove(); derived = true; show(); }, 850);
+};
+show();
+
+// tabellen
+const tb = document.getElementById('table');
+tb.innerHTML = [1, 2, 3, 4, 5].map((k) => {
+  const left = `<span class="x">x</span>${k > 1 ? `<sup class="e">${k}</sup>` : ''}`;
+  const right = k === 1 ? '<span class="e">1</span>' : `<span class="e">${k}</span><span class="x">x</span>${k - 1 > 1 ? `<sup>${k - 1}</sup>` : ''}`;
+  return `<div>${left}</div><div class="arr">→ hop ned →</div><div>${right}</div>`;
+}).join('');
+</script>
+</body>
+</html>

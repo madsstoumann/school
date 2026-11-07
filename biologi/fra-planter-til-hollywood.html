@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fra planter til Hollywood</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: en biograf. Marquee-skilt øverst, derefter en lodret filmstrimmel med scener, et stamtræ og rulletekster. Bevidst kun mørkt tema: det er mørkt i biografen. */
+:root {
+  --velvet: #1a0d10; --velvet-2: #2a1418; --film: #120f0c; --gold: #f0c35a; --bulb: #ffe7a3;
+  --cream: #f4e9d8; --muted: #c4b19a; --red: #e0483e; --line: #4a2a2e; --frame: #f7efe2; --ink: #1d1612;
+  --font-display: "Limelight", "Georgia", serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+  --font-script: "Courier Prime", "Courier New", monospace;
+  color-scheme: dark;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--velvet); color: var(--cream); font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  background-image: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 18px, rgba(255,255,255,0) 18px 40px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 72px;
+}
+.wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 56px; }
+a { color: var(--gold); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.back { font-weight: 700; text-decoration: none; justify-self: start; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; line-height: 1.05; text-wrap: balance; }
+p { margin: 0; }
+
+/* Marquee */
+.marquee { position: relative; background: var(--velvet-2); border: 3px solid var(--gold); border-radius: 18px; padding: 44px 24px 36px; text-align: center; display: grid; gap: 14px; }
+.marquee::before, .marquee::after { content: ""; position: absolute; left: 14px; right: 14px; height: 10px; background: radial-gradient(circle, var(--bulb) 0 4px, transparent 5px) 0 0 / 22px 10px repeat-x; filter: drop-shadow(0 0 4px var(--gold)); }
+.marquee::before { top: 12px; } .marquee::after { bottom: 12px; }
+.marquee .now { font-family: var(--font-script); letter-spacing: .3em; text-transform: uppercase; color: var(--gold); font-size: .85rem; }
+.marquee h1 { font-size: clamp(2.4rem, 8vw, 4.8rem); color: var(--gold); text-shadow: 0 0 18px rgba(240,195,90,.45); }
+.marquee .tag { font-size: 1.15rem; max-width: 46ch; margin: 0 auto; }
+.marquee .rating { display: inline-block; justify-self: center; font-family: var(--font-script); font-size: .85rem; border: 1.5px solid var(--muted); color: var(--muted); padding: 3px 10px; border-radius: 4px; }
+@media (prefers-reduced-motion: no-preference) {
+  .marquee::before, .marquee::after { animation: blink 1.6s steps(2) infinite; }
+  @keyframes blink { 50% { background-position: 11px 0; } }
+}
+
+/* Stamtræ */
+.lineage { display: grid; gap: 14px; }
+.lineage h2 { font-size: 1.9rem; color: var(--gold); }
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.chain .tok { padding: 8px 14px; border-radius: 999px; background: var(--velvet-2); border: 1.5px solid var(--gold); font-weight: 700; }
+.chain .tok.star { background: var(--gold); color: var(--ink); }
+.chain .plus { font-family: var(--font-script); font-size: .85rem; color: var(--muted); }
+.chain .ar { color: var(--gold); font-weight: 700; }
+
+/* Filmstrimmel */
+.reel { display: grid; gap: 0; background: var(--film); border-radius: 10px; padding: 0 44px; position: relative; }
+.reel::before, .reel::after { content: ""; position: absolute; top: 0; bottom: 0; width: 22px; background: radial-gradient(ellipse 7px 9px at center, var(--muted) 98%, transparent 100%) 0 0 / 22px 34px repeat-y; }
+.reel::before { left: 11px; } .reel::after { right: 11px; }
+.scene { background: var(--frame); color: var(--ink); margin: 14px 0; border-radius: 6px; padding: 22px; display: grid; grid-template-columns: 170px 1fr; gap: 22px; align-items: center; }
+.scene .art { width: 100%; max-width: 170px; aspect-ratio: 1; }
+.scene .art svg { width: 100%; height: 100%; display: block; }
+.scene .txt { display: grid; gap: 8px; min-width: 0; }
+.scene .slate { font-family: var(--font-script); font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; color: #8a3a2c; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.scene h3 { font-size: 1.7rem; color: var(--ink); }
+.scene .voice { font-style: italic; color: #6a5544; }
+.scene a { color: #8a3a2c; font-weight: 700; }
+.scene .myth { font-family: var(--font-script); font-size: .8rem; background: #eadcc4; border-radius: 4px; padding: 1px 6px; justify-self: start; color: #6a5544; }
+@media (max-width: 600px) { .reel { padding: 0 34px; } .reel::before { left: 6px; } .reel::after { right: 6px; } .scene { grid-template-columns: 1fr; } .scene .art { max-width: 120px; } }
+
+/* Rulletekster */
+.credits { text-align: center; display: grid; gap: 22px; padding-block: 20px; }
+.credits h2 { font-size: 2rem; color: var(--gold); }
+.credits dl { margin: 0; display: grid; gap: 10px; }
+.credits .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: baseline; }
+.credits dt { text-align: right; color: var(--muted); font-family: var(--font-script); font-size: .92rem; }
+.credits dd { margin: 0; text-align: left; font-weight: 700; }
+.credits .end { font-family: var(--font-display); font-size: 2.4rem; color: var(--gold); }
+
+/* Quiz */
+.quiz { display: grid; gap: 20px; }
+.quiz h2 { font-size: 1.9rem; color: var(--gold); }
+.q { display: grid; gap: 10px; }
+.q h3 { font-family: var(--font-body); font-weight: 700; font-size: 1.1rem; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font: inherit; color: var(--cream); background: var(--velvet-2); border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+.q button:hover { border-color: var(--gold); }
+.q button.right { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.q button.wrong { background: var(--red); border-color: var(--red); }
+.q .fb { color: var(--muted); min-height: 1.5em; }
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Alle emner</a>
+
+  <header class="marquee">
+    <div class="now">Snart i en biograf nær dig</div>
+    <h1>Fra planter til Hollywood</h1>
+    <p class="tag">Den sande historie om et lille sukkermolekyle, der blev til stenhård plantevæg, eksploderende forklæde, larmende billardkugler og til sidst filmstjerne.</p>
+    <span class="rating">Tilladt for alle · indeholder eksplosioner</span>
+  </header>
+
+  <section class="lineage" aria-label="Stamtræ">
+    <h2>Stjernens stamtræ</h2>
+    <div class="chain">
+      <span class="tok">CO₂</span><span class="ar">→</span>
+      <span class="tok">glukose</span><span class="ar">→</span>
+      <span class="tok">cellulose</span><span class="plus">+ salpetersyre</span><span class="ar">→</span>
+      <span class="tok">nitrocellulose</span><span class="plus">+ kamfer</span><span class="ar">→</span>
+      <span class="tok">celluloid</span><span class="ar">→</span>
+      <span class="tok star">film</span>
+    </div>
+    <p>Navnet afslører familien: <b>cellul</b>ose og <b>cellul</b>oid. Det er den samme slægt, bare med en meget dramatisk karriere.</p>
+  </section>
+
+  <section class="reel" aria-label="Filmstrimmel med scener">
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#e8f2dc"/><polygon points="50,24 73,37 73,63 50,76 27,63 27,37" fill="none" stroke="#3d7f2e" stroke-width="5"/><circle cx="82" cy="18" r="10" fill="#f0c35a"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 1</span><span>Et blad, en solskinsdag</span></div>
+        <h3>Stjernen bliver født</h3>
+        <p>I Calvins cyklus bliver CO₂ fra luften bygget sammen til et sukker: <b>glukose</b>. Lille, sød og helt ukendt.</p>
+        <p class="voice">Speak: "Hun kom fra ingenting. Bogstaveligt talt fra den blå luft."</p>
+        <a href="calvins-cyklus.html">Se fødslen i Calvins cyklus →</a>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#e8f2dc"/><g fill="none" stroke="#3d7f2e" stroke-width="4"><polygon points="14,44 22,39 30,44 30,54 22,59 14,54"/><polygon points="34,54 42,49 50,54 50,64 42,69 34,64"/><polygon points="54,44 62,39 70,44 70,54 62,59 54,54"/><polygon points="74,54 82,49 90,54 90,64 82,69 74,64"/><path d="M30,49 L34,59 M50,59 L54,49 M70,49 L74,59"/></g></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 2</span><span>Trænings-montage</span></div>
+        <h3>Holdet samles: cellulose</h3>
+        <p>Tusindvis af glukose-molekyler hægter sig sammen i lange, lige kæder. Hver anden vender på hovedet. Det er det, der gør cellulose stærk og stiv.</p>
+        <p>Stivelse er også glukose i kæder, men den er planternes bløde madpakke. Cellulose er actionhelten.</p>
+        <p class="voice">Speak: "Hver anden på hovedet. Ingen kunne knække dem."</p>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#e8f2dc"/><rect x="20" y="22" width="60" height="56" rx="8" fill="#fff" stroke="#3d7f2e" stroke-width="6"/><g stroke="#3d7f2e" stroke-width="2" opacity=".6"><path d="M20,34 L80,34 M20,46 L80,46 M20,58 L80,58 M20,70 L80,70"/></g><ellipse cx="50" cy="50" rx="12" ry="7" fill="#4f9a3a"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 3</span><span>Plantens fæstning</span></div>
+        <h3>Rustningen</h3>
+        <p>Cellulose bliver til cellevæggen om hver plantecelle. Det er derfor, træer kan stå oprejst, og bomuld er næsten ren cellulose.</p>
+        <p>Vi mennesker kan ikke fordøje den. Køer kan, men kun fordi de har bakterier i maven, der gør arbejdet.</p>
+        <p class="voice">Speak: "Mennesket prøvede at spise hende. Mennesket tabte."</p>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#fbe3d6"/><path d="M35,30 L65,30 L72,80 L28,80 Z" fill="#fff" stroke="#8a3a2c" stroke-width="4"/><path d="M50,22 C40,40 60,42 50,58 C62,48 66,36 58,26 C58,34 54,36 50,22 Z" fill="#e0483e"/><path d="M50,36 C46,44 56,46 50,54 C56,50 58,44 54,40 Z" fill="#f0c35a"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 4</span><span>Schweiz, 1840'erne</span></div>
+        <h3>Forklædet, der eksploderede</h3>
+        <p>Kemikeren Christian Schönbein spilder syre i køkkenet og tørrer op med et bomuldsforklæde. Han hænger det til tørre ved ovnen. Puf. Forklædet brænder op i et glimt.</p>
+        <p>Syren havde lavet cellulosen om til <b>nitrocellulose</b>, også kaldet skydebomuld. Det blev brugt som krudt.</p>
+        <span class="myth">Historien fortælles sådan. Detaljerne er nok pyntet lidt.</span>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#dfe9df"/><circle cx="40" cy="58" r="20" fill="#f7efe2" stroke="#1d1612" stroke-width="3"/><circle cx="40" cy="58" r="8" fill="#1d1612"/><text x="40" y="61" text-anchor="middle" font-size="9" fill="#f7efe2" font-family="Courier Prime, monospace">1</text><path d="M62,22 l6,10 10,-4 -4,10 10,6 -11,3 2,11 -9,-7 -7,8 -1,-11 -11,-2 9,-6 -4,-10 10,4 z" fill="#f0c35a" stroke="#8a3a2c" stroke-width="2"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 5</span><span>USA, 1860'erne</span></div>
+        <h3>Billardkrisen</h3>
+        <p>Billardkugler blev lavet af elefanters stødtænder, og det blev for dyrt. Et firma udlovede en stor pris for et nyt materiale. John Wesley Hyatt blandede nitrocellulose med kamfer og fik en hård, glat plast: <b>celluloid</b>, en af verdens første plasttyper.</p>
+        <p>Problemet: kuglerne kunne give et knald, når de stødte hårdt sammen.</p>
+        <span class="myth">Sagnet siger, at gæster på en saloon trak deres revolvere.</span>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#2a1418"/><rect x="18" y="30" width="64" height="40" fill="#120f0c"/><g fill="#f7efe2"><rect x="22" y="33" width="5" height="4"/><rect x="32" y="33" width="5" height="4"/><rect x="42" y="33" width="5" height="4"/><rect x="52" y="33" width="5" height="4"/><rect x="62" y="33" width="5" height="4"/><rect x="72" y="33" width="5" height="4"/><rect x="22" y="63" width="5" height="4"/><rect x="32" y="63" width="5" height="4"/><rect x="42" y="63" width="5" height="4"/><rect x="52" y="63" width="5" height="4"/><rect x="62" y="63" width="5" height="4"/><rect x="72" y="63" width="5" height="4"/></g><rect x="22" y="40" width="26" height="20" fill="#f0c35a"/><rect x="52" y="40" width="26" height="20" fill="#f0c35a"/><path d="M30,56 l5,-9 5,9 z M60,56 l5,-9 5,9 z" fill="#3d7f2e"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 6</span><span>1889 og fremefter</span></div>
+        <h3>Hollywood ringer</h3>
+        <p>George Eastman fra Kodak laver celluloid til tynde, bøjelige film-ruller. Pludselig kan man tage mange billeder i træk, og så kan billederne bevæge sig. Filmen er født.</p>
+        <p>I mere end 50 år blev alle film optaget på celluloid. Det er derfor, man stadig kalder filmverdenen "celluloid-drømmen".</p>
+        <p class="voice">Speak: "Fra cellevæg til lærred. Hun var klar til sit close-up."</p>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#fbe3d6"/><path d="M50,14 C30,40 70,46 46,86 C80,70 82,40 60,22 C62,40 54,40 50,14 Z" fill="#e0483e"/><path d="M50,46 C42,60 60,62 50,80 C64,72 64,58 56,52 Z" fill="#f0c35a"/><path d="M18,74 Q30,68 42,74 T66,74 T90,74" fill="none" stroke="#2f7fc1" stroke-width="4"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 7</span><span>Plot twist</span></div>
+        <h3>Stjernen har et temperament</h3>
+        <p>Nitrat-film er i familie med skydebomuld, så den brænder voldsomt. Den kan endda blive ved med at brænde under vand, fordi den selv indeholder det ilt, ilden skal bruge. Biografer brændte, og operatørrum blev bygget som brandsikre bokse.</p>
+        <p>I 1950'erne skiftede filmindustrien til en roligere fætter, celluloseacetat, kaldet sikkerhedsfilm.</p>
+        <p class="voice">Speak: "Hun var varm. Alt for varm."</p>
+      </div>
+    </article>
+
+    <article class="scene">
+      <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#e8f2dc"/><circle cx="40" cy="44" r="16" fill="#fff" stroke="#1d1612" stroke-width="3"/><path d="M62,58 l16,-8 -4,18 -12,6 z" fill="#f0c35a" stroke="#8a3a2c" stroke-width="2.5"/><path d="M24,74 q8,-6 16,0 q8,6 16,0" fill="none" stroke="#1d1612" stroke-width="3"/></svg></div>
+      <div class="txt">
+        <div class="slate"><span>Scene 8</span><span>I dag</span></div>
+        <h3>Efterspil</h3>
+        <p>Bordtennisbolde var af celluloid helt frem til 2014. Mange guitar-plektre og brillestel er stadig lavet af celluloid eller acetat. Film optages nu digitalt, men cellulosen står stadig i hvert eneste træ udenfor.</p>
+        <p class="voice">Speak: "Hun gik på pension. Men hun er aldrig rigtig forsvundet."</p>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="credits" aria-label="Rulletekster">
+    <h2>Medvirkende</h2>
+    <dl>
+      <div class="row"><dt>Hovedrolle</dt><dd>Glukose</dd></div>
+      <div class="row"><dt>Stuntdouble</dt><dd>Cellulose</dd></div>
+      <div class="row"><dt>Producer</dt><dd>Fotosyntesen</dd></div>
+      <div class="row"><dt>Lys</dt><dd>Solen</dd></div>
+      <div class="row"><dt>Pyroteknik</dt><dd>Salpetersyre</dd></div>
+      <div class="row"><dt>Duft</dt><dd>Kamfer</dd></div>
+      <div class="row"><dt>Statister</dt><dd>Alle verdens træer</dd></div>
+      <div class="row"><dt>Ingen elefanter</dt><dd>kom til skade under optagelserne</dd></div>
+    </dl>
+    <div class="end">The End</div>
+  </section>
+
+  <section class="quiz" aria-label="Quiz">
+    <h2>Efter filmen</h2>
+    <div class="q" data-a="1" data-why="Begge er glukose-kæder, men i cellulose vender hver anden glukose på hovedet. Det gør den stiv og ufordøjelig for os.">
+      <h3>1. Hvad har cellulose og stivelse til fælles?</h3>
+      <div class="opts"><button type="button">Begge er protein</button><button type="button">Begge er lange kæder af glukose</button><button type="button">Begge kan eksplodere</button></div>
+      <p class="fb"></p>
+    </div>
+    <div class="q" data-a="2" data-why="Kamfer gjorde nitrocellulosen formbar, og blandingen fik navnet celluloid.">
+      <h3>2. Hvad skal nitrocellulose blandes med for at blive til celluloid?</h3>
+      <div class="opts"><button type="button">Klorofyl</button><button type="button">Vand</button><button type="button">Kamfer</button></div>
+      <p class="fb"></p>
+    </div>
+    <div class="q" data-a="0" data-why="Billardkugler af elfenben blev for dyre, og celluloid var en af de første erstatninger.">
+      <h3>3. Hvad skulle celluloid oprindelig erstatte?</h3>
+      <div class="opts"><button type="button">Elfenben i billardkugler</button><button type="button">Glas i vinduer</button><button type="button">Papir i bøger</button></div>
+      <p class="fb"></p>
+    </div>
+    <div class="q" data-a="1" data-why="Nitrat-film indeholder selv ilt, så den brænder voldsomt. Derfor skiftede man til sikkerhedsfilm.">
+      <h3>4. Hvorfor stoppede man med nitrat-film?</h3>
+      <div class="opts"><button type="button">Den var for dyr</button><button type="button">Den brændte alt for let</button><button type="button">Den var sort-hvid</button></div>
+      <p class="fb"></p>
+    </div>
+  </section>
+
+  <footer class="note">
+    <p>Biologien bygger på <i>Biologi i fokus</i>, Nucleus Forlag 2009: figur 29 (cellulose er opbygget af β-glukose), figur 28 (stivelse) og figur 180 (Calvins cyklus). Historien om skydebomuld, celluloid og film er almen kulturhistorie og står ikke i bogen.</p>
+  </footer>
+</div>
+<script>
+document.querySelectorAll('.q').forEach(q => {
+  const right = +q.dataset.a;
+  q.querySelectorAll('button').forEach((b, i) => b.addEventListener('click', () => {
+    q.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    b.classList.add(i === right ? 'right' : 'wrong');
+    q.querySelector('.fb').textContent = (i === right ? 'Rigtigt. ' : 'Ikke helt. ') + q.dataset.why;
+  }));
+});
+</script>
+</body>
+</html>

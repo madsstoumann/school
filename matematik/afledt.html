@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hældningsmåleren f'</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 4 af 7</div>
+    <h1>Hældningsmåleren: f mærke</h1>
+    <p class="lede">Nu tager vi tangenten med på tur hen ad hele grafen. For hvert sted skriver vi hældningen ned som en prik. Prikkerne tegner en helt ny graf: <span class="ct">den afledte</span>.</p>
+  </header>
+
+  <div class="cards">
+    <div class="pcard f">
+      <h3><span class="math cf">f(x)</span></h3>
+      <p><b>Hvor højt er jeg?</b> Den oprindelige graf. Udtales "f af x".</p>
+    </div>
+    <div class="pcard t">
+      <h3><span class="math ct">f'(x)</span></h3>
+      <p><b>Hvor stejlt er her?</b> Hældningen på hvert sted. Udtales "f mærke x". Den lille streg er mærket for "afledt".</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Kør måleren hen ad grafen</h2>
+    <p>Træk i en af graferne. Øverst kører tangenten. Nederst sætter den en prik i den højde, hældningen har. Kør hele vejen, og se hvilken figur der dukker op.</p>
+    <div class="lab">
+      <div class="controls" style="border-top: 0; border-bottom: 1px solid var(--line)">
+        <div class="seg" id="pick" role="group" aria-label="Vælg graf"></div>
+        <button id="all" type="button">Vis hele f'</button>
+      </div>
+      <svg id="top" aria-label="Grafen f"></svg>
+      <svg id="bot" aria-label="Den afledte f mærke" style="border-top: 2px solid var(--line)"></svg>
+      <div class="readout"><b id="state"></b><p id="sub"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mønsteret, der altid gælder</h2>
+    <div class="cards">
+      <div class="pcard up">
+        <svg viewBox="0 0 200 110"><path d="M20 50 L90 15" stroke="var(--up)" stroke-width="5" stroke-linecap="round"/><line x1="10" y1="85" x2="190" y2="85" class="g-axis"/><rect x="45" y="62" width="20" height="23" rx="3" fill="var(--up)"/></svg>
+        <h3>Grafen går op</h3>
+        <p>f' ligger <b>over</b> nul-linjen.</p>
+      </div>
+      <div class="pcard flat">
+        <svg viewBox="0 0 200 110"><path d="M20 30 Q100 0 180 30" fill="none" stroke="var(--f)" stroke-width="4"/><circle cx="100" cy="15" r="6" fill="var(--flat)"/><line x1="10" y1="85" x2="190" y2="85" class="g-axis"/><circle cx="100" cy="85" r="7" fill="var(--flat)"/></svg>
+        <h3>Toppen eller bunden</h3>
+        <p>f' er <b>præcis nul</b>. Prikken sidder på linjen.</p>
+      </div>
+      <div class="pcard down">
+        <svg viewBox="0 0 200 110"><path d="M20 15 L90 50" stroke="var(--down)" stroke-width="5" stroke-linecap="round"/><line x1="10" y1="65" x2="190" y2="65" class="g-axis"/><rect x="45" y="65" width="20" height="23" rx="3" fill="var(--down)"/></svg>
+        <h3>Grafen går ned</h3>
+        <p>f' ligger <b>under</b> nul-linjen.</p>
+      </div>
+    </div>
+    <div class="remember">
+      <div class="eyebrow">Ordet differentialkvotient</div>
+      <p>Hældningen ét bestemt sted, fx <span class="math ct">f'(2)</span>, hedder <b>differentialkvotienten</b> i 2. Hele den nye graf <span class="math ct">f'</span> hedder <b>den afledte funktion</b>. At finde den hedder <b>at differentiere</b>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Prøv dig selv</h2>
+    <div class="quiz" data-quiz='[
+      {"q":"Grafen f har en top. Hvor er f&apos; lige der?","o":["Over nul","På nul","Under nul"],"a":1,"why":"På toppen er grafen helt flad et kort øjeblik, så hældningen er nul."},
+      {"q":"f&apos; ligger under nul-linjen. Hvad gør f?","o":["Går op","Står stille","Går ned"],"a":2,"why":"Negativ hældning betyder ned ad bakke."}
+    ]'></div>
+  </section>
+
+  <nav class="nextnav"><a href="tangent.html">← Fra to punkter til ét</a><a href="monotoni.html">Næste: Op, ned, top og bund →</a></nav>
+</div>
+
+<script>
+const CURVES = {
+  'Bakke': { f: (x) => -0.5 * (x - 3) ** 2 + 5.5 },
+  'Dal': { f: (x) => 0.5 * (x - 3) ** 2 + 1 },
+  'Bølge': { f: (x) => 1.6 * Math.sin(x * 1.2) + 3.5 },
+  'Rutsjebane': { f: (x) => 0.2 * (x - 1) * (x - 3) * (x - 5) + 3.5 },
+};
+const opts = { w: 700, pad: 30, x0: 0, x1: 6 };
+let key = 'Bakke', x = 1, seen;
+const topS = document.getElementById('top'), botS = document.getElementById('bot');
+let T, B, tan, dotT, bar, dotB, trail;
+const BINS = 240;
+function build() {
+  topS.innerHTML = ''; botS.innerHTML = ''; seen = new Array(BINS + 1).fill(false);
+  const f = CURVES[key].f;
+  T = new Plot(topS, { ...opts, h: 300, y0: 0, y1: 8, ylabel: '↑ f: højde' });
+  T.curve(f);
+  tan = el('line', { class: 'g-t' }, T.top);
+  dotT = el('circle', { r: 10, class: 'g-dot' }, T.top);
+  B = new Plot(botS, { ...opts, h: 260, y0: -5, y1: 5, ylabel: "↑ f': hældning" });
+  el('text', { x: B.sx(6) - 4, y: B.sy(0) + 18, 'text-anchor': 'end', class: 'g-ax-label', text: 'nul-linjen' }, B.bg);
+  trail = el('path', { fill: 'none', stroke: 'var(--t)', 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, B.top);
+  bar = el('line', { 'stroke-width': 8, 'stroke-linecap': 'round', opacity: .55 }, B.top);
+  dotB = el('circle', { r: 9 }, B.top);
+  [T, B].forEach((p) => p.drag(p.svg, (nx) => { x = clamp(nx, 0, 6); draw(); }));
+  draw();
+}
+function draw() {
+  const f = CURVES[key].f, y = f(x), m = slopeOf(f, x), col = signColor(m, 0.08);
+  T.place(dotT, x, y); T.lineAt(tan, x, y, m, 0.9);
+  const i = Math.round(x / 6 * BINS); for (let j = Math.max(0, i - 2); j <= Math.min(BINS, i + 2); j++) seen[j] = true;
+  let d = '', pen = false;
+  for (let j = 0; j <= BINS; j++) {
+    if (!seen[j]) { pen = false; continue; }
+    const xx = j / BINS * 6;
+    d += (pen ? 'L' : 'M') + B.sx(xx).toFixed(1) + ' ' + B.sy(clamp(slopeOf(f, xx), -5, 5)).toFixed(1); pen = true;
+  }
+  trail.setAttribute('d', d);
+  const mb = clamp(m, -5, 5);
+  bar.setAttribute('x1', B.sx(x)); bar.setAttribute('x2', B.sx(x)); bar.setAttribute('y1', B.sy(0)); bar.setAttribute('y2', B.sy(mb)); bar.setAttribute('stroke', col);
+  B.place(dotB, x, mb); dotB.setAttribute('fill', col);
+  const c = signClass(m, 0.08);
+  document.getElementById('state').innerHTML = c === 'up' ? '<span class="cu">Grafen går op her</span>, så prikken ligger over nul-linjen.'
+    : c === 'down' ? '<span class="cd">Grafen går ned her</span>, så prikken ligger under nul-linjen.'
+    : '<span class="cl">Grafen er flad her</span>, så prikken sidder på nul-linjen.';
+  document.getElementById('sub').textContent = Math.abs(m) > 2 ? 'Jo stejlere grafen er, jo længere væk fra nul-linjen kommer prikken.' : 'Træk videre hen ad grafen og se det orange spor vokse frem.';
+}
+const pick = document.getElementById('pick');
+Object.keys(CURVES).forEach((k) => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = k; b.id = 'c-' + k;
+  b.setAttribute('aria-pressed', k === key);
+  b.onclick = () => { key = k; pick.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); build(); };
+  pick.appendChild(b);
+});
+document.getElementById('all').onclick = () => { seen.fill(true); draw(); };
+build();
+</script>
+</body>
+</html>

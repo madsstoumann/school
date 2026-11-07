@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+<title>Fosforkredsløbet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: et stort interaktivt kredsløbsdiagram øverst, derefter "følg et atom"-trin, tal fra bogen og en lille quiz. */
+:root {
+  --bg: #f2f5f3;
+  --surface: #ffffff;
+  --fg: #17211c;
+  --muted: #56645c;
+  --line: #d5ded8;
+  --sky: #e3eef6;
+  --soil: #eadfd2;
+  --water: #cfe3ef;
+  --accent: #b8651a;
+  --accent-soft: #f8eadb;
+  --bio: #2f8a4f;
+  --micro: #9a5a1c;
+  --human: #b8343a;
+  --geo: #5b6a86;
+  --node: #ffffff;
+  --node-line: #b9c6bf;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Verdana", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+    --sky: #17252f; --soil: #2a2219; --water: #18303d;
+    --accent: #f2a964; --accent-soft: #33251a;
+    --bio: #6fcf8e; --micro: #e3a25f; --human: #ff7d7f; --geo: #9fb0d6;
+    --node: #1e2924; --node-line: #3d4e45;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111814; --surface: #19221d; --fg: #e6ede8; --muted: #9fb0a6; --line: #2c3a32;
+  --sky: #17252f; --soil: #2a2219; --water: #18303d;
+  --accent: #f2a964; --accent-soft: #33251a;
+  --bio: #6fcf8e; --micro: #e3a25f; --human: #ff7d7f; --geo: #9fb0d6;
+  --node: #1e2924; --node-line: #3d4e45;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 700; }
+h3 { font-size: 1.1rem; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+header { display: grid; gap: 14px; }
+.lede { font-size: 1.2rem; max-width: 62ch; }
+.formula { display: inline-block; font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; color: var(--accent); }
+.big-idea { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--accent-soft); font-size: .92rem; }
+.chip b { color: var(--accent); }
+
+/* Diagram */
+.diagram-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: grid; }
+.diagram-scroll { overflow-x: auto; }
+.diagram-scroll svg { display: block; width: 100%; min-width: 680px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 18px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 22px; height: 4px; border-radius: 2px; display: inline-block; }
+.hint { font-size: .88rem; color: var(--muted); padding: 0 18px 14px; }
+
+svg text { font-family: var(--font-body); fill: var(--fg); }
+.node rect { fill: var(--node); stroke: var(--node-line); stroke-width: 1.5; }
+.node .t { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.node .s { font-size: 12px; fill: var(--muted); }
+.node .f { font-family: var(--font-display); font-weight: 800; font-size: 13px; fill: var(--accent); }
+.edge path { fill: none; stroke-width: 3; opacity: .6; transition: opacity .2s, stroke-width .2s; }
+.edge .lab rect { fill: var(--surface); stroke-width: 1.5; }
+.edge .lab text { font-size: 12.5px; font-weight: 700; }
+.edge { cursor: pointer; }
+.edge:hover path, .edge.on path { opacity: 1; stroke-width: 5; }
+.edge.on .lab rect { stroke-width: 3; }
+.edge:focus { outline: none; }
+.edge:focus-visible .lab rect { stroke-width: 3.5; }
+.dim .edge:not(.on) { opacity: .7; }
+.k-bio { stroke: var(--bio); } .k-micro { stroke: var(--micro); } .k-human { stroke: var(--human); } .k-geo { stroke: var(--geo); }
+.f-bio { fill: var(--bio); } .f-micro { fill: var(--micro); } .f-human { fill: var(--human); } .f-geo { fill: var(--geo); }
+.c-bio { color: var(--bio); } .c-micro { color: var(--micro); } .c-human { color: var(--human); } .c-geo { color: var(--geo); }
+.bg-bio { background: var(--bio); } .bg-micro { background: var(--micro); } .bg-human { background: var(--human); } .bg-geo { background: var(--geo); }
+.band-sky { fill: var(--sky); } .band-soil { fill: var(--soil); } .band-water { fill: var(--water); }
+.band-label { font-size: 11px; letter-spacing: .12em; fill: var(--muted); font-weight: 700; }
+.dot { fill: var(--accent); }
+
+/* Story panel */
+.story { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 18px; border-top: 1px solid var(--line); background: var(--accent-soft); }
+.story-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.story h3 { font-size: 1.35rem; }
+.story .who { font-size: .92rem; color: var(--muted); }
+.story p { max-width: 70ch; }
+.btns { display: flex; gap: 8px; }
+button { font: inherit; font-weight: 700; border: 1.5px solid var(--accent); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+button:hover { background: var(--accent); color: var(--surface); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.count { font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--muted); }
+
+/* Pattern strip */
+.pattern { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pattern .p { padding: 8px 14px; border-radius: 10px; background: var(--surface); border: 1.5px solid var(--line); font-weight: 700; }
+.pattern .p.store { border-color: var(--accent); color: var(--accent); }
+.pattern .ar { color: var(--muted); font-weight: 700; }
+.special { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.special b { color: var(--accent); }
+/* Visual facts */
+.bars { display: grid; gap: 6px; margin-top: 6px; }
+.bar { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; align-items: center; font-size: .9rem; }
+.bar .track { height: 14px; border-radius: 7px; background: var(--accent-soft); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; background: var(--accent); }
+.bar .fill.alt { background: var(--human); }
+.eq { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.eq span { padding: 4px 10px; border-radius: 8px; background: var(--accent-soft); font-weight: 700; }
+.eq .op { background: none; color: var(--muted); padding: 0 2px; }
+/* Steps list */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 6px; align-content: start; cursor: pointer; }
+.steps li.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.steps .n { font-family: var(--font-display); font-weight: 800; font-size: .85rem; display: flex; align-items: center; gap: 8px; }
+.steps .n i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.steps .who { font-size: .88rem; color: var(--muted); }
+.section { display: grid; gap: 16px; }
+.section > p { max-width: 68ch; color: var(--muted); }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.fact { border-left: 4px solid var(--accent); padding: 4px 0 4px 14px; display: grid; gap: 4px; }
+.fact .v { font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.fact .d { font-size: .95rem; }
+.fact .src { font-size: .8rem; color: var(--muted); }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.two > div { min-width: 0; display: grid; gap: 10px; align-content: start; }
+ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+.remember { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 12px; }
+.remember ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+
+.quiz { display: grid; gap: 18px; }
+.q { display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q button { font-weight: 400; border-color: var(--line); }
+.q button.right { background: var(--bio); border-color: var(--bio); color: var(--surface); }
+.q button.wrong { background: var(--human); border-color: var(--human); color: var(--surface); }
+.q .fb { font-size: .95rem; color: var(--muted); min-height: 1.5em; }
+
+.note { font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 6px; }
+.tag-extra { display: inline-block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
+sub, sup { line-height: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+.edge.on path { stroke-dasharray: 10 6; animation: flow .8s linear infinite; }
+.back { color: var(--accent); font-weight: 700; text-decoration: none; justify-self: start; }
+.back:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Biologi · Kredsløb</div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+    <div class="big-idea" id="chips"></div>
+  </header>
+
+  <section class="diagram-card" aria-label="Kredsløbsdiagram">
+    <div class="diagram-scroll"><svg id="svg" role="img"></svg></div>
+    <div class="legend" id="legend"></div>
+    <p class="hint">Tryk på en pil i tegningen, eller brug knapperne, for at følge et atom rundt.</p>
+    <div class="story" aria-live="polite">
+      <div class="story-head">
+        <div>
+          <div class="count" id="count"></div>
+          <h3 id="st-title"></h3>
+        </div>
+        <div class="btns"><button id="prev" type="button">← Forrige</button><button id="next" type="button">Næste →</button></div>
+      </div>
+      <p id="st-text"></p>
+      <p class="who" id="st-who"></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Samme mønster i alle kredsløb</h2>
+    <div class="pattern" id="pattern"></div>
+    <p class="special" id="special"></p>
+  </section>
+
+  <section class="section">
+    <h2 id="steps-h"></h2>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="section" id="facts-sec">
+    <h2>Set i bogen</h2>
+    <div class="facts" id="facts"></div>
+  </section>
+
+  <section class="two" id="extra"></section>
+
+  <section class="remember">
+    <h2>Husk det sådan</h2>
+    <ol id="remember"></ol>
+  </section>
+
+  <section class="section">
+    <h2>Test dig selv</h2>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <footer class="note" id="note"></footer>
+</div>
+
+<script>
+const D = {"title": "Fosforkredsløbet", "lede": "Fosfor (P) sidder i DNA, i ATP og i alle cellemembraner. Det særlige ved fosfor er, at det <b>ikke har nogen gasform</b>. Det kan ikke flyve rundt i luften, så kredsløbet går gennem <b>sten, jord og vand</b> og er meget langsomt.", "chips": ["Optages som <b>fosfat, PO₄³⁻</b>", "Ingen gas, ingen vej gennem luften", "Ofte det stof, der begrænser væksten"], "svgLabel": "Diagram over fosforkredsløbet mellem bjergarter, jord, planter, dyr, dødt materiale, vand og bundfald", "view": [820, 640], "bands": [{"type": "sky", "y": 0, "h": 272, "label": "OVER JORDEN"}, {"type": "soil", "y": 272, "h": 368, "w": 520, "label": "JORD OG UNDERGRUND"}, {"type": "water", "x": 520, "w": 300, "y": 272, "h": 368, "label": "SØER OG HAV"}], "nodes": [{"id": "fert", "label": "Kunstgødning", "sub": "fosfat fra miner", "x": 120, "y": 80, "w": 160}, {"id": "plants", "label": "Planter", "sub": "DNA, ATP, membraner", "x": 340, "y": 190, "w": 170}, {"id": "animals", "label": "Dyr", "sub": "spiser planterne", "x": 600, "y": 190, "w": 140}, {"id": "dead", "label": "Dødt organisk materiale", "sub": "blade, gødning, knogler", "x": 600, "y": 340, "w": 220}, {"id": "soil", "label": "Fosfat (PO₄³⁻)", "sub": "opløst i jordvandet", "x": 340, "y": 440, "w": 170}, {"id": "rock", "label": "Bjergarter", "sub": "fosfat bundet i sten", "x": 100, "y": 440, "w": 150}, {"id": "water", "label": "Søer og hav", "sub": "alger og vandplanter", "x": 680, "y": 480, "w": 180}, {"id": "sed", "label": "Bundfald", "sub": "bliver til nye sten", "x": 420, "y": 585, "w": 180}], "edges": [{"from": "rock", "to": "soil", "name": "Forvitring", "kind": "geo", "step": 0}, {"from": "soil", "to": "plants", "name": "Planteoptag", "kind": "bio", "step": 1, "bend": -20}, {"from": "plants", "to": "animals", "name": "Føde", "kind": "bio", "step": 2}, {"from": "plants", "to": "dead", "name": "Visne blade", "kind": "bio", "step": 3, "bend": -20, "lo": [-15, 6]}, {"from": "animals", "to": "dead", "name": "Gødning, død", "short": "Gødning", "kind": "bio", "step": 3, "ao": [30, 0], "bo": [30, 0]}, {"from": "dead", "to": "soil", "name": "Mineralisering", "kind": "micro", "step": 4, "bend": -20}, {"from": "soil", "to": "water", "name": "Udvaskning og erosion", "short": "Udvaskning", "kind": "geo", "step": 5, "bend": -25}, {"from": "water", "to": "sed", "name": "Bundfældning", "kind": "geo", "step": 6, "bend": -20}, {"from": "sed", "to": "rock", "name": "Millioner af år", "kind": "geo", "step": 7, "bend": -30}, {"from": "fert", "to": "soil", "name": "Gødskning", "kind": "human", "step": 8, "bend": 60, "lo": [0, 45]}], "store": "Jorden (fosfat)", "special": "Fosfor kan ikke svæve i luften. Det går kun med vand og jord, og den lange omvej går gennem sten.", "stepsTitle": "Følg et fosforatom rundt", "story": [{"title": "Forvitring: fosfat frigives fra sten", "text": "Fosfor ligger gemt i bjergarter. Regn, frost og syrer fra rødder og mikroorganismer nedbryder stenene langsomt, så der frigives fosfat (PO₄³⁻) til jordvandet. Det er kredsløbets eneste rigtige kilde.<span class=\"tag-extra\">Ikke i bogens figurer</span>", "who": "Hvem: vejr, vand og syrer"}, {"title": "Planteoptag: rødderne henter fosfat", "text": "Planten optager fosfat fra jordvandet. Fosfat binder sig hårdt til jordpartikler, så det er svært at få fat i. Mange planter samarbejder derfor med mykorrhizasvampe, hvis lange tråde når meget længere ud i jorden end rødderne.", "who": "Hvem: rødder og mykorrhizasvampe (figur 182, 183 og 186)"}, {"title": "Fosfor går videre i fødekæden", "text": "Planten bygger fosfat ind i DNA, RNA, ATP og fosfolipider i cellemembranen. Dyr får fosfor ved at spise planter og bruger det også til knogler og tænder.", "who": "Hvem: planteædere og rovdyr"}, {"title": "Døde blade og gødning havner på jorden", "text": "Visne blade, ekskrementer, døde dyr og knogler ender som dødt organisk materiale. Fosforet sidder stadig i organiske molekyler.", "who": "Hvem: alle organismer"}, {"title": "Mineralisering: fosfat frigives igen", "text": "Nedbrydere spiser det døde materiale, og fosforet bliver til fosfat i jorden igen. Nu kan planterne bruge det på ny. Det lille kredsløb mellem jord, planter og nedbrydere er det hurtige.", "who": "Hvem: bakterier og svampe (figur 185)"}, {"title": "Udvaskning og erosion: fosfat havner i vandet", "text": "Jordpartikler med fosfat bliver skyllet ud i søer og åer med regn, især fra marker med meget gødning. I vandet giver ekstra fosfat masser af alger. Når de dør og nedbrydes, opstår iltsvind.<span class=\"tag-extra\">Ikke i bogens figurer</span>", "who": "Hvem: regn, erosion og mennesket"}, {"title": "Bundfældning: fosfat synker til bunds", "text": "Fosfat i søer og hav bliver brugt af alger og vandplanter. Det, der ikke bruges, synker til bunds sammen med døde organismer og bliver til bundfald.<span class=\"tag-extra\">Ikke i bogens figurer</span>", "who": "Hvem: tyngdekraft og tid"}, {"title": "Fra bundfald til nye sten", "text": "Over millioner af år presses bundfaldet sammen til nye bjergarter. Hvis havbunden hæves, kan stenene igen forvitre, og kredsløbet starter forfra. Det er derfor, fosforkredsløbet er så langsomt.<span class=\"tag-extra\">Ikke i bogens figurer</span>", "who": "Hvem: geologi"}, {"title": "Mennesket gøder med fosfat fra miner", "text": "Landbruget bruger kunstgødning lavet af fosfat, der er gravet ud af miner. Det giver bedre høst, men de lagre, man kan grave i, er begrænsede, og overskuddet ender ofte i vandmiljøet.<span class=\"tag-extra\">Ikke i bogens figurer</span>", "who": "Hvem: mennesket"}], "facts": [{"v": "Overalt i cellen", "d": "Fosfor sidder i arvematerialet (DNA), i cellens energi (ATP) og i cellemembranen.", "src": "Figur 182 og 3"}, {"v": "Fra kvælstof- til fosformangel", "d": "Når en skov får meget kvælstof, bliver fosfor det, planterne mangler.", "src": "Figur 212"}], "extra": [{"h": "Hvorfor er fosfor så vigtigt?", "body": "<ul class=\"plain\"><li><b>DNA og RNA:</b> fosfat er en del af \"rygraden\" i arvematerialet.</li><li><b>ATP:</b> cellens energivaluta har tre fosfatgrupper. Energien frigives, når en af dem klippes af.</li><li><b>Cellemembraner:</b> fosfolipiderne har et vandelskende fosfathoved (figur 3 og 4).</li><li><b>Fotosyntese:</b> flere af de molekyler, der bygger sukker i bladet, har fosfat på (figur 181).</li></ul>"}, {"h": "Sammenlign med kvælstof og kulstof", "body": "<ul class=\"plain\"><li><b>Kulstof og kvælstof</b> har en gasform (CO₂ og N₂), så de kan bevæge sig hurtigt via luften.</li><li><b>Fosfor</b> har ingen gasform. Det kan kun flytte sig med vand, jord og levende væsner.</li><li>Det, der går tabt til havet, kommer først tilbage efter millioner af år. Derfor er fosfor ofte en mangelvare, og naturen genbruger det effektivt mellem jord, planter og nedbrydere (figur 196).</li></ul>"}], "remember": ["<b>Ingen luft-genvej.</b> Fosfor har ingen gas, så kredsløbet går gennem sten, jord og vand.", "<b>To hastigheder.</b> Hurtigt: jord → planter → nedbrydere → jord. Langsomt: jord → hav → bundfald → sten → jord.", "<b>Fosfat = PO₄³⁻.</b> Det er formen, planter optager, og det sidder i DNA, ATP og cellemembraner.", "<b>For meget i vandet giver alger og iltsvind.</b> Det sker, når gødning skylles ud i søer og fjorde."], "quiz": [{"q": "Hvad er den store forskel på fosforkredsløbet og kulstofkredsløbet?", "o": ["Fosfor findes ikke i levende væsner", "Fosfor har ingen gasform", "Fosfor bevæger sig hurtigere"], "a": 1, "why": "Uden en gasform kan fosfor ikke gå via luften, så kredsløbet er langsomt og går gennem sten, jord og vand."}, {"q": "I hvilken form optager planter fosfor?", "o": ["Som fosfat, PO₄³⁻", "Som P₂-gas", "Som nitrat"], "a": 0, "why": "Figur 182 viser, at fosfor optages som PO₄³⁻."}, {"q": "Hvordan hjælper mykorrhizasvampe planten?", "o": ["De laver fotosyntese for planten", "Deres tråde når langt ud i jorden og henter fosfat og andre næringsstoffer", "De spiser plantens rødder"], "a": 1, "why": "Svampen får sukker fra planten og giver næringsstoffer tilbage. Det er en symbiose (figur 186)."}, {"q": "Hvad sker der, når meget fosfat skylles ud i en sø?", "o": ["Søen bliver klarere", "Der kommer mange alger, og senere iltsvind", "Fisk vokser bedre uden problemer"], "a": 1, "why": "Fosfat gøder algerne. Når de dør, bruger nedbryderne ilten i vandet."}], "note": "<p>Kilde: <i>Biologi i fokus</i>, Nucleus Forlag 2009. Bogen har ingen figur over selve fosforkredsløbet. Det, der stammer fra bogen, er fosfors rolle og optagelsesform (figur 3, 181, 182), mineralisering (185), mykorrhiza (186), næringsstoffer der holdes i økosystemet (196) og skiftet fra kvælstof- til fosforbegrænsning (212).</p><p>Trin markeret <span class=\"tag-extra\">Ikke i bogens figurer</span> er almen biologisk viden, der er tilføjet for at gøre kredsløbet helt.</p>"};
+const $ = id => document.getElementById(id);
+$('h1').innerHTML = D.title;
+$('lede').innerHTML = D.lede;
+$('chips').innerHTML = D.chips.map(c => `<span class="chip">${c}</span>`).join('');
+$('steps-h').innerHTML = D.stepsTitle;
+const KIND = { bio: 'Levende organismer', micro: 'Bakterier og svampe', human: 'Mennesket', geo: 'Fysik, kemi og geologi' };
+const usedKinds = [...new Set(D.edges.map(e => e.kind))];
+$('legend').innerHTML = usedKinds.map(k => `<span><i class="bg-${k}"></i>${KIND[k]}</span>`).join('');
+
+// ---------- Diagram ----------
+const NS = 'http://www.w3.org/2000/svg';
+const svg = $('svg');
+const W = D.view[0], H = D.view[1];
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+svg.setAttribute('aria-label', D.svgLabel);
+const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+
+const defs = el('defs', {}, svg);
+for (const k of ['bio','micro','human','geo']) {
+  const m = el('marker', { id: 'ar-' + k, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' }, defs);
+  el('path', { d: 'M0,0 L10,5 L0,10 z', class: 'f-' + k }, m);
+}
+for (const b of D.bands) {
+  el('rect', { x: b.x || 0, y: b.y, width: b.w || W, height: b.h, class: 'band-' + b.type }, svg);
+  if (b.label) { const t = el('text', { x: (b.x || 0) + 12, y: b.y + 18, class: 'band-label' }, svg); t.textContent = b.label; }
+}
+const edgeLayer = el('g', {}, svg);
+const nodeLayer = el('g', {}, svg);
+const labelLayer = el('g', {}, svg);
+const N = {};
+for (const n of D.nodes) {
+  N[n.id] = n;
+  n.w = n.w || 150; n.h = n.h || 58;
+  const g = el('g', { class: 'node' }, nodeLayer);
+  el('rect', { x: n.x - n.w/2, y: n.y - n.h/2, width: n.w, height: n.h, rx: 12 }, g);
+  const t = el('text', { x: n.x, y: n.y - (n.sub ? 4 : -5), 'text-anchor': 'middle', class: 't' }, g); t.textContent = n.label;
+  if (n.sub) { const s = el('text', { x: n.x, y: n.y + 14, 'text-anchor': 'middle', class: 's' }, g); s.textContent = n.sub; }
+  if (n.f) { const f = el('text', { x: n.x + n.w/2 - 8, y: n.y - n.h/2 - 6, 'text-anchor': 'end', class: 'f' }, g); f.textContent = n.f; }
+}
+function edgePoint(n, px, py, dx, dy) {
+  const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+  const hw = n.w/2 + 5, hh = n.h/2 + 5;
+  const tx = dx ? ((dx > 0 ? n.x + hw - px : px - (n.x - hw)) / Math.abs(dx)) : Infinity;
+  const ty = dy ? ((dy > 0 ? n.y + hh - py : py - (n.y - hh)) / Math.abs(dy)) : Infinity;
+  const t = Math.min(tx, ty);
+  return [px + dx*t, py + dy*t];
+}
+const edgeEls = [];
+D.edges.forEach((e, i) => {
+  const a = N[e.from], b = N[e.to];
+  const ax = a.x + (e.ao ? e.ao[0] : 0), ay = a.y + (e.ao ? e.ao[1] : 0);
+  const bx = b.x + (e.bo ? e.bo[0] : 0), by = b.y + (e.bo ? e.bo[1] : 0);
+  const mx = (ax + bx)/2, my = (ay + by)/2;
+  const dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy);
+  const bend = e.bend || 0;
+  const cx = mx - dy/L*bend, cy = my + dx/L*bend;
+  const p0 = edgePoint(a, ax, ay, cx - ax, cy - ay), p2 = edgePoint(b, bx, by, cx - bx, cy - by);
+  const g = el('g', { class: 'edge', tabindex: 0, role: 'button', 'aria-label': e.name }, edgeLayer);
+  el('path', { d: `M${p0[0]},${p0[1]} Q${cx},${cy} ${p2[0]},${p2[1]}`, class: 'k-' + e.kind, 'marker-end': `url(#ar-${e.kind})`, ...(e.both ? { 'marker-start': `url(#ar-${e.kind})` } : {}) }, g);
+  // label
+  const lx = 0.25*p0[0] + 0.5*cx + 0.25*p2[0] + (e.lo ? e.lo[0] : 0);
+  const ly = 0.25*p0[1] + 0.5*cy + 0.25*p2[1] + (e.lo ? e.lo[1] : 0);
+  const lab = el('g', { class: 'lab' }, g);
+  const txt = e.short || e.name;
+  const lw = txt.length * 7.1 + 18;
+  el('rect', { x: lx - lw/2, y: ly - 12, width: lw, height: 24, rx: 12, class: 'k-' + e.kind }, lab);
+  const t = el('text', { x: lx, y: ly + 4.5, 'text-anchor': 'middle', class: 'c-' + e.kind }, lab); t.textContent = txt;
+  // move label group to label layer, but keep the same handlers
+  const lg = el('g', { class: 'edge', 'data-i': i }, labelLayer); lg.appendChild(lab);
+  [g, lg].forEach(x => x.addEventListener('click', () => go(e.step)));
+  g.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(e.step); } });
+  edgeEls.push({ e, els: [g, lg] });
+});
+
+// ---------- Story ----------
+const story = D.story;
+let cur = 0;
+$('steps').innerHTML = story.map((s, i) => {
+  const kind = D.edges.find(e => e.step === i)?.kind || 'bio';
+  return `<li data-i="${i}"><div class="n c-${kind}"><i class="bg-${kind}"></i>Trin ${i+1}</div><h3>${s.title}</h3><p>${s.text}</p>${s.who ? `<p class="who">${s.who}</p>` : ''}</li>`;
+}).join('');
+document.querySelectorAll('#steps li').forEach(li => li.addEventListener('click', () => { go(+li.dataset.i); $('svg').scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
+function go(i) {
+  cur = (i + story.length) % story.length;
+  const s = story[cur];
+  $('count').textContent = `Trin ${cur+1} af ${story.length}`;
+  $('st-title').innerHTML = s.title;
+  $('st-text').innerHTML = s.text;
+  $('st-who').innerHTML = s.who || '';
+  svg.classList.add('dim');
+  edgeEls.forEach(({ e, els }) => els.forEach(x => x.classList.toggle('on', e.step === cur)));
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
+}
+$('prev').onclick = () => go(cur - 1);
+$('next').onclick = () => go(cur + 1);
+go(0);
+
+// ---------- Facts, extra, remember, quiz ----------
+if (D.facts && D.facts.length) $('facts').innerHTML = D.facts.map(f => {
+  let vis = '';
+  if (f.bars) { const max = Math.max(...f.bars.map(b => b.v)); vis = `<div class="bars">${f.bars.map(b => `<div class="bar"><span>${b.l}</span><div class="track" role="img" aria-label="${b.l}"><div class="fill${b.alt ? ' alt' : ''}" style="width:${b.v / max * 100}%"></div></div></div>`).join('')}</div>`; }
+  return `<div class="fact"><div class="v">${f.v}</div><div class="d">${f.d}</div>${vis}<div class="src">${f.src}</div></div>`;
+}).join('');
+else $('facts-sec').hidden = true;
+$('extra').innerHTML = D.extra.map(x => `<div><h2>${x.h}</h2>${x.body}</div>`).join('');
+$('remember').innerHTML = D.remember.map(r => `<li>${r}</li>`).join('');
+$('quiz').innerHTML = D.quiz.map((q, qi) => `<div class="q" data-q="${qi}"><h3>${qi+1}. ${q.q}</h3><div class="opts">${q.o.map((o, oi) => `<button type="button" data-o="${oi}">${o}</button>`).join('')}</div><p class="fb"></p></div>`).join('');
+document.querySelectorAll('.q').forEach(qe => {
+  const q = D.quiz[+qe.dataset.q];
+  qe.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    qe.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong'));
+    const ok = +b.dataset.o === q.a;
+    b.classList.add(ok ? 'right' : 'wrong');
+    qe.querySelector('.fb').innerHTML = (ok ? 'Rigtigt. ' : 'Ikke helt. ') + q.why;
+  }));
+});
+$('note').innerHTML = D.note;
+const P = ['Lager', 'Planter', 'Dyr', 'Dødt materiale', 'Nedbrydere'];
+$('pattern').innerHTML = P.map((x, i) => `<span class="p${i === 0 ? ' store' : ''}">${i === 0 ? D.store : x}</span>`).join('<span class="ar">→</span>') + `<span class="ar">→ tilbage til</span><span class="p store">${D.store}</span>`;
+$('special').innerHTML = `<b>Det særlige her:</b> ${D.special}`;
+</script>
+
+</body>
+</html>

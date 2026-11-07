@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fra to punkter til ét</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="diff.css">
+<script src="diff.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="index.html">← Alle emner</a>
+    <div class="eyebrow">Differentialregning · 3 af 7</div>
+    <h1>Fra to punkter til ét</h1>
+    <p class="lede">En ret linje har samme hældning overalt. En kurve skifter hele tiden. Så hvordan måler man hældningen på ét bestemt sted? Tricket er at lade to punkter krybe sammen.</p>
+  </header>
+
+  <section>
+    <h2>Lad punkterne krybe sammen</h2>
+    <p>Linjen gennem to punkter på kurven kaldes en <b>sekant</b> (stiplet). Træk skyderen mod højre, så punkterne kommer tættere og tættere på hinanden. Du kan også trække det orange punkt hen ad kurven.</p>
+    <div class="lab">
+      <svg id="plot" aria-label="Kurve med to punkter og en linje igennem dem"></svg>
+      <div class="controls">
+        <label class="slider" for="h">Langt fra hinanden <input id="h" type="range" min="0" max="100" step="1" value="10"> Tæt på</label>
+      </div>
+      <div class="readout">
+        <b id="state"></b>
+        <svg id="bars" viewBox="0 0 600 54" aria-label="Sammenligning af hældninger"></svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="cards">
+    <div class="pcard">
+      <svg viewBox="0 0 200 100"><path d="M10 90 Q100 -10 190 90" class="g-f" stroke-width="3"/><line x1="40" y1="52" x2="170" y2="70" class="g-sec"/><circle cx="55" cy="42" r="6" class="g-dot"/><circle cx="160" cy="58" r="6" class="g-dot" style="stroke: var(--muted)"/></svg>
+      <h3>Sekant</h3>
+      <p>Går gennem <b>to</b> punkter. Den måler gennemsnittet mellem dem.</p>
+    </div>
+    <div class="pcard t">
+      <svg viewBox="0 0 200 100"><path d="M10 90 Q100 -10 190 90" class="g-f" stroke-width="3"/><line x1="10" y1="62" x2="130" y2="14" class="g-t"/><circle cx="62" cy="41" r="6" class="g-dot"/></svg>
+      <h3>Tangent</h3>
+      <p>Rører kurven i <b>ét</b> punkt, som et kys. Den viser hældningen lige der.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Zoom ind, til kurven bliver lige</h2>
+    <p>Jorden er rund, men når du står på den, ser den flad ud. Sådan er det også med kurver. Zoom ind på det orange punkt.</p>
+    <div class="lab">
+      <svg id="zoom" aria-label="Kurven set med lup"></svg>
+      <div class="controls">
+        <label class="slider" for="z">Lup <input id="z" type="range" min="0" max="100" step="1" value="0"> Kæmpe zoom</label>
+      </div>
+      <div class="readout"><b id="zstate"></b></div>
+    </div>
+  </section>
+
+  <div class="remember">
+    <div class="eyebrow">Ordet grænseværdi</div>
+    <p>At lade afstanden krybe mod nul uden at blive nul, og se hvad hældningen nærmer sig, hedder en <b>grænseværdi</b>. Tænk på det som at zoome, indtil linjen og kurven ikke kan skelnes.</p>
+  </div>
+
+  <section>
+    <h2>Prøv dig selv</h2>
+    <div class="quiz" data-quiz='[
+      {"q":"Hvor mange punkter går en tangent igennem på kurven (lige der)?","o":["Ét","To","Mange"],"a":0,"why":"Tangenten kysser kurven i ét punkt. Sekanten bruger to."},
+      {"q":"Hvad sker der med en kurve, når man zoomer meget ind?","o":["Den bliver mere krum","Den ligner en ret linje","Den forsvinder"],"a":1,"why":"Tæt nok på ligner enhver glat kurve en ret linje. Den linje er tangenten."}
+    ]'></div>
+  </section>
+
+  <nav class="nextnav"><a href="haeldning.html">← Hældning</a><a href="afledt.html">Næste: Hældningsmåleren →</a></nav>
+</div>
+
+<script>
+const f = (x) => 0.2 * (x - 0.5) ** 2 + 0.6;
+const P = new Plot(document.getElementById('plot'), { w: 700, h: 400, x0: -1, x1: 7, y0: 0, y1: 8, xlabel: 'x →' });
+P.curve(f);
+const sec = el('line', { class: 'g-sec' }, P.top);
+const tanLine = el('line', { class: 'g-t', opacity: 0 }, P.top);
+const brk = el('line', { stroke: 'var(--muted)', 'stroke-width': 3 }, P.top);
+const q = el('circle', { r: 8, class: 'g-dot', style: 'stroke: var(--muted)' }, P.top);
+const p = el('circle', { r: 10, class: 'g-dot g-handle' }, P.top);
+const hit = el('rect', { x: 0, y: 0, width: 700, height: 400, fill: 'transparent' }, P.svg); P.svg.insertBefore(hit, P.top);
+let x0 = 2.5;
+const inp = document.getElementById('h');
+const bars = document.getElementById('bars');
+const barSec = el('rect', { x: 120, y: 6, height: 16, rx: 8, fill: 'var(--t)', opacity: .5 }, bars);
+const barTan = el('rect', { x: 120, y: 32, height: 16, rx: 8, fill: 'var(--t)' }, bars);
+el('text', { x: 0, y: 19, class: 'g-tag', fill: 'var(--muted)', text: 'Sekanten' }, bars);
+el('text', { x: 0, y: 45, class: 'g-tag', fill: 'var(--t)', text: 'Tangenten' }, bars);
+function draw() {
+  const h = 3 * Math.pow(0.003, +inp.value / 100);
+  const y0 = f(x0), x1 = x0 + h, y1 = f(x1), ms = (y1 - y0) / h, mt = slopeOf(f, x0);
+  P.place(p, x0, y0); P.place(q, x1, y1);
+  P.lineAt(sec, x0, y0, ms, 2.5);
+  P.lineAt(tanLine, x0, y0, mt, 2.5);
+  const close = h < 0.05;
+  tanLine.setAttribute('opacity', close ? 1 : 0); sec.setAttribute('opacity', close ? 0 : .8);
+  brk.setAttribute('x1', P.sx(x0)); brk.setAttribute('x2', P.sx(x1)); brk.setAttribute('y1', P.sy(0) - 6); brk.setAttribute('y2', P.sy(0) - 6);
+  const sc = 120;
+  barSec.setAttribute('width', Math.max(4, Math.abs(ms) * sc)); barTan.setAttribute('width', Math.max(4, Math.abs(mt) * sc));
+  document.getElementById('state').textContent = close
+    ? 'Nu er punkterne næsten ét. Den stiplede linje er blevet til tangenten!'
+    : h > 1.2 ? 'Punkterne er langt fra hinanden. Sekanten skærer en stor bid af kurven.'
+    : 'Tættere på. Se hvordan sekantens søjle nærmer sig tangentens.';
+}
+inp.addEventListener('input', draw);
+P.drag(hit, (x) => { x0 = clamp(x, -0.5, 5.5); draw(); });
+P.drag(p, (x) => { x0 = clamp(x, -0.5, 5.5); draw(); });
+draw();
+
+// lup
+const zs = document.getElementById('zoom'), zi = document.getElementById('z');
+const g = (x) => Math.sin(x) * 1.6 + 0.15 * x * x;
+function drawZoom() {
+  zs.innerHTML = '';
+  const zoom = Math.pow(300, +zi.value / 100), cx = 1.2, cy = g(cx), wx = 6 / zoom, wy = wx * 0.55;
+  const Z = new Plot(zs, { w: 700, h: 380, x0: cx - wx, x1: cx + wx, y0: cy - wy, y1: cy + wy, grid: wx / 6, axes: false });
+  const tl = el('line', { class: 'g-t', opacity: .35, 'stroke-width': 10 }, Z.top);
+  Z.lineAt(tl, cx, cy, slopeOf(g, cx), wx * 2);
+  Z.curve(g, 'g-f', cx - wx, cx + wx, Z.top);
+  const d = el('circle', { r: 9, class: 'g-dot' }, Z.top); Z.place(d, cx, cy);
+  document.getElementById('zstate').textContent = zoom < 3 ? 'Kurven bugter sig tydeligt. Det tykke orange bånd er tangenten.'
+    : zoom < 30 ? 'Kurven retter sig ud. Den lægger sig ind langs tangenten.'
+    : 'Nu kan du ikke se forskel. Helt tæt på ER kurven en ret linje, og dens hældning er tangentens.';
+}
+zi.addEventListener('input', drawZoom);
+drawZoom();
+</script>
+</body>
+</html>
